@@ -31,7 +31,6 @@
 
 struct bd_input_dev {
 	bd_source base;
-	BD_INT	fp;
 	BD_CHAR file_name[255];
 	bd_input_type type;
 
@@ -41,7 +40,7 @@ static void bd_input_dev_get_mouse_event(bd_input_dev_t dev, bd_mouse_event_t ev
 {
 	struct input_event current_event;
 	memset(&current_event, 0, sizeof(struct input_event));
-	read(dev->fp, &current_event, sizeof(struct input_event));
+	read(dev->base.fd, &current_event, sizeof(struct input_event));
 	if (dev == BD_NULL || event == BD_NULL) {
 		return;
 	}
@@ -58,7 +57,7 @@ static void bd_input_dev_get_touch_event(bd_input_dev_t dev, bd_touch_event_t ev
 
 }
 
-bd_input_dev_t bd_input_dev_create(const char* name, bd_source_pool_t pool)
+bd_input_dev_t bd_input_dev_create(const char* name)
 {
 	bd_input_dev_t dev = (bd_input_dev_t) bd_malloc(sizeof(bd_input_dev));
 	if (dev == BD_NULL) {
@@ -66,14 +65,9 @@ bd_input_dev_t bd_input_dev_create(const char* name, bd_source_pool_t pool)
 		return BD_NULL;
 	}
 	strcpy(dev->file_name, name);
-	if (pool == BD_NULL) {
-		bd_log(INPUT_TAG, "source pool is null\n");
-		bd_free(dev);
-		return BD_NULL;
-	}
+
 	dev->base.type = BD_SOURCE_INPUT;
 	dev->type = BD_INPUT_MOUSE;
-	bd_source_pool_push(pool, (bd_source_t)dev);
 	return dev;
 }
 
@@ -81,8 +75,8 @@ BD_INT bd_input_dev_open(bd_input_dev_t dev)
 {
 	char path[255] = "/dev/input/";
 	strcat(path, dev->file_name);
-	dev->fp = open(path, O_RDONLY);
-	if (dev->fp < 0) {
+	dev->base.fd = open(path, O_RDONLY);
+	if (dev->base.fd < 0) {
 		bd_log(INPUT_TAG, "input device open failure\n");
 		return -1;
 	}
@@ -91,7 +85,7 @@ BD_INT bd_input_dev_open(bd_input_dev_t dev)
 
 BD_INT bd_input_dev_close(bd_input_dev_t dev, BD_UINT size)
 {
-	return close(dev->fp);
+	return close(dev->base.fd);
 }
 
 bd_event_t bd_input_dev_read_event(bd_input_dev_t dev)

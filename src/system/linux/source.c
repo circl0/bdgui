@@ -70,10 +70,9 @@ void bd_source_pool_push(bd_source_pool_t pool, bd_source_t source)
 	}
 	struct pollfd* fp = pool->fds + pool->size;
 	fp->fd = source->fd;
-	fp->events = 0xffff;
+	fp->events = POLLIN;
 	*(pool->sources + pool->size) = source;
 	pool->size++;
-	bd_log(SOURCE_TAG, "bd_source_pool_push size: %d\n", pool->size);
 }
 
 void bd_source_pool_clear(bd_source_pool_t pool)
@@ -88,19 +87,16 @@ void bd_source_pool_clear(bd_source_pool_t pool)
 
 void bd_source_pool_wait_for_events(bd_source_pool_t pool, bd_source_pool_events_func func)
 {
-	bd_log(SOURCE_TAG, "bd_source_pool_wait_for_events start\n");
 	if (pool == BD_NULL) {
 		return;
 	}
 	BD_INT result = poll(pool->fds, pool->size, pool->timeout);
 
-	bd_log(SOURCE_TAG, "bd_source_pool_wait_for_events event comes\n");
-	if ((result) && func != BD_NULL) {
+	if ((result > 0) && func != BD_NULL) {
 		func(pool);
 	}
 
 	for (BD_INT i = 0; i < pool->size; ++i) {
-		bd_log(SOURCE_TAG, "bd_source_pool_wait_for_events clear revents\n");
 		pool->fds[i].revents = 0;
 	}
 }

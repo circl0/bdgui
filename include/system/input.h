@@ -59,7 +59,7 @@ typedef struct bd_keyboard_event {
 struct bd_input_dev;
 typedef struct bd_input_dev bd_input_dev, *bd_input_dev_t;
 
-bd_input_dev_t bd_input_dev_create(const char* name, bd_source_pool_t pool);
+bd_input_dev_t bd_input_dev_create(const char* name);
 BD_INT bd_input_dev_open(bd_input_dev_t dev);
 BD_INT bd_input_dev_close(bd_input_dev_t dev, BD_UINT size);
 

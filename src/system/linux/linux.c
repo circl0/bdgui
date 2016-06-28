@@ -54,11 +54,14 @@ static BD_HANDLE bd_main_loop_run_function(BD_HANDLE data)
 {
 	bd_source_pool_t pool = bd_source_pool_create(2);
 
-	bd_input_dev_t input1 = bd_input_dev_create("event0", pool);
-	bd_input_dev_t input2 = bd_input_dev_create("mouse0", pool);
+	bd_input_dev_t input1 = bd_input_dev_create("event0");
+	bd_input_dev_t input2 = bd_input_dev_create("mouse0");
 
 	bd_input_dev_open(input1);
 	bd_input_dev_open(input2);
+
+	bd_source_pool_push(pool, (bd_source_t)input1);
+	bd_source_pool_push(pool, (bd_source_t)input2);
 
 	while (1) {
 		bd_source_pool_wait_for_events(pool, bd_source_pool_poll_function);
