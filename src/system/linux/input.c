@@ -49,7 +49,13 @@ static void bd_input_dev_get_mouse_event(bd_input_dev_t dev, bd_mouse_event_t ev
 
 static void bd_input_dev_get_keyboard_event(bd_input_dev_t dev, bd_keyboard_event_t event)
 {
-
+	struct input_event current_event;
+	memset(&current_event, 0, sizeof(struct input_event));
+	read(dev->base.fd, &current_event, sizeof(struct input_event));
+	if (dev == BD_NULL || event == BD_NULL) {
+		return;
+	}
+	bd_log("input", "name: %s, type: %x, code: %x, value: %x\n", dev->file_name, current_event.type, current_event.code, current_event.value);
 }
 
 static void bd_input_dev_get_touch_event(bd_input_dev_t dev, bd_touch_event_t event)
@@ -57,7 +63,7 @@ static void bd_input_dev_get_touch_event(bd_input_dev_t dev, bd_touch_event_t ev
 
 }
 
-bd_input_dev_t bd_input_dev_create(const char* name)
+bd_input_dev_t bd_input_dev_create(const char* name, bd_input_type type)
 {
 	bd_input_dev_t dev = (bd_input_dev_t) bd_malloc(sizeof(bd_input_dev));
 	if (dev == BD_NULL) {
@@ -67,7 +73,7 @@ bd_input_dev_t bd_input_dev_create(const char* name)
 	strcpy(dev->file_name, name);
 
 	dev->base.type = BD_SOURCE_INPUT;
-	dev->type = BD_INPUT_MOUSE;
+	dev->type = type;
 	return dev;
 }
 

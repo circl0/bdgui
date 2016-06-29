@@ -39,8 +39,7 @@ static void bd_source_pool_poll_function(bd_source_pool_t pool)
 			case BD_SOURCE_INPUT:
 			{
 				bd_input_dev_t input = (bd_input_dev_t) source;
-				bd_mouse_event_t event = (bd_mouse_event_t)bd_input_dev_read_event(input);
-//				bd_log("mouse", "X: %d, Y: %d\n", event->x, event->y);
+				bd_event_t event = bd_input_dev_read_event(input);
 				break;
 			}
 			default:
@@ -54,8 +53,8 @@ static BD_HANDLE bd_main_loop_run_function(BD_HANDLE data)
 {
 	bd_source_pool_t pool = bd_source_pool_create(2);
 
-	bd_input_dev_t input1 = bd_input_dev_create("event0");
-	bd_input_dev_t input2 = bd_input_dev_create("mouse0");
+	bd_input_dev_t input1 = bd_input_dev_create("event0", BD_INPUT_KEYBOARD);
+	bd_input_dev_t input2 = bd_input_dev_create("mouse0", BD_INPUT_MOUSE);
 
 	bd_input_dev_open(input1);
 	bd_input_dev_open(input2);

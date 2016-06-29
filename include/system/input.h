@@ -25,7 +25,8 @@
 #include "system/source.h"
 
 typedef enum bd_input_type {
-	BD_INPUT_MOUSE = 0,
+	BD_INPUT_INVALID = -1,
+	BD_INPUT_MOUSE,
 	BD_INPUT_TOUCH,
 	BD_INPUT_KEYBOARD
 } bd_input_type;
@@ -59,7 +60,7 @@ typedef struct bd_keyboard_event {
 struct bd_input_dev;
 typedef struct bd_input_dev bd_input_dev, *bd_input_dev_t;
 
-bd_input_dev_t bd_input_dev_create(const char* name);
+bd_input_dev_t bd_input_dev_create(const char* name, bd_input_type type);
 BD_INT bd_input_dev_open(bd_input_dev_t dev);
 BD_INT bd_input_dev_close(bd_input_dev_t dev, BD_UINT size);
 
