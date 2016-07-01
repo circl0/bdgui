@@ -13,8 +13,6 @@
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
@@ -25,7 +23,7 @@
 							<option id="cdt.managedbuild.option.gnu.cross.prefix.1904154268" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix" value="arm-bcm2708hardfp-linux-gnueabi-" valueType="string"/>
 							<option id="cdt.managedbuild.option.gnu.cross.path.2050011736" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path" value="/home/circl0/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1314238543" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
-							<builder buildPath="${workspace_loc:/bdgui}/Debug" id="cdt.managedbuild.builder.gnu.cross.1291257278" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/bdgui}/Debug" id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder.693856640" keepEnvironmentInBuildfile="false" name="Autotools Makefile Generator" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1903630622" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option id="gnu.c.compiler.option.include.paths.743479566" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include}&quot;"/>
@@ -106,19 +104,13 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="bdgui.cdt.managedbuild.target.gnu.cross.exe.1549214728" name="Executable" projectType="cdt.managedbuild.target.gnu.cross.exe"/>
-	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.338738517;cdt.managedbuild.config.gnu.cross.exe.release.338738517.;cdt.managedbuild.tool.gnu.cross.c.compiler.1640742970;cdt.managedbuild.tool.gnu.c.compiler.input.1706875700">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.176375196;cdt.managedbuild.config.gnu.cross.exe.debug.176375196.;cdt.managedbuild.tool.gnu.cross.c.compiler.734148892;cdt.managedbuild.tool.gnu.c.compiler.input.1405445395">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
+		<project id="bdgui.org.eclipse.linuxtools.cdt.autotools.core.projectType.205592192" name="GNU Autotools" projectType="org.eclipse.linuxtools.cdt.autotools.core.projectType"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Build (GNU)">
+			<resource resourceType="PROJECT" workspacePath="/bdgui"/>
+		</configuration>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/bdgui"/>
 		</configuration>
@@ -127,4 +119,16 @@
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.338738517;cdt.managedbuild.config.gnu.cross.exe.release.338738517.;cdt.managedbuild.tool.gnu.cross.c.compiler.1640742970;cdt.managedbuild.tool.gnu.c.compiler.input.1706875700">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.176375196;cdt.managedbuild.config.gnu.cross.exe.debug.176375196.;cdt.managedbuild.tool.gnu.cross.c.compiler.734148892;cdt.managedbuild.tool.gnu.c.compiler.input.1405445395">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.176375196;cdt.managedbuild.config.gnu.cross.exe.debug.176375196.;cdt.managedbuild.tool.gnu.cross.c.compiler.1903630622;cdt.managedbuild.tool.gnu.c.compiler.input.1888023505">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
 </cproject>

@@ -54,7 +54,7 @@ static BD_HANDLE bd_main_loop_run_function(BD_HANDLE data)
 	bd_source_pool_t pool = bd_source_pool_create(2);
 
 	bd_input_dev_t input1 = bd_input_dev_create("event0", BD_INPUT_KEYBOARD);
-	bd_input_dev_t input2 = bd_input_dev_create("mouse0", BD_INPUT_MOUSE);
+	bd_input_dev_t input2 = bd_input_dev_create("event1", BD_INPUT_MOUSE);
 
 	bd_input_dev_open(input1);
 	bd_input_dev_open(input2);

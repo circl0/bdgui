@@ -44,7 +44,7 @@ static void bd_input_dev_get_mouse_event(bd_input_dev_t dev, bd_mouse_event_t ev
 	if (dev == BD_NULL || event == BD_NULL) {
 		return;
 	}
-	bd_log("input", "name: %s, type: %x, code: %x, value: %x\n", dev->file_name, current_event.type, current_event.code, current_event.value);
+	bd_log("input", "name: %s, type: %d, code: %d, value: %d\n", dev->file_name, current_event.type, current_event.code, current_event.value);
 }
 
 static void bd_input_dev_get_keyboard_event(bd_input_dev_t dev, bd_keyboard_event_t event)
@@ -55,7 +55,7 @@ static void bd_input_dev_get_keyboard_event(bd_input_dev_t dev, bd_keyboard_even
 	if (dev == BD_NULL || event == BD_NULL) {
 		return;
 	}
-	bd_log("input", "name: %s, type: %x, code: %x, value: %x\n", dev->file_name, current_event.type, current_event.code, current_event.value);
+	bd_log("input", "name: %s, type: %d, code: %d, value: %d\n", dev->file_name, current_event.type, current_event.code, current_event.value);
 }
 
 static void bd_input_dev_get_touch_event(bd_input_dev_t dev, bd_touch_event_t event)
