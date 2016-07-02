@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
