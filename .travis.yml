@@ -1,0 +1,25 @@
+language: c
+
+sudo: required
+
+before_install:
+  - sudo apt-get update 
+
+install:
+  - sudo apt-get install gcc-arm-linux-gnueabihf
+  - export CC=arm-linux-gnueabihf-gcc
+  - arm-linux-gnueabihf-gcc -v
+  - git clone https://github.com/circl0/gdsl.git
+  - cd gdsl
+  - ./configure --host=arm-linux-gnueabi --prefix=$PWD/../build
+  - make
+  - make install
+
+script:
+  - cd ..
+  - aclocal
+  - autoconf
+  - autoheader
+  - automake --add-missing
+  - ./configure --host=arm-bcm2708-linux-gnueabi CFLAGS=-I$PWD/build/include LDFLAGS=-L$PWD/include/lib
+  - make

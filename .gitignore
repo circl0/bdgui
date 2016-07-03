@@ -1,1 +1,6 @@
 /Debug/
+/.autotools
+/.cproject
+/.project
+/.settings/
+/autom4te.cache/

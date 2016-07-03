@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.59])
 AC_INIT([bdgui], [0.1], [allu_yuan@163.com])
 
 CFLAGS="$CFLAGS -std=gnu99"
