@@ -19,10 +19,12 @@
 #ifndef INCLUDE_SYSTEM_MUTEX_H_
 #define INCLUDE_SYSTEM_MUTEX_H_
 
-#ifdef WITH_LINUX
+#include "config.h"
+
+//#ifdef WITH_LINUX
 #include <pthread.h>
 typedef pthread_mutex_t bd_mutex_t;
-#endif
+//#endif
 
 #include "type/type.h"
 

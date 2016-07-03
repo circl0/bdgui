@@ -20,14 +20,15 @@
 #ifndef BD_LIST_H
 #define BD_LIST_H
 
+#include "config.h"
 #include "type/type.h"
 
-#ifdef WITH_GDSL
+//#ifdef WITH_GDSL
 #include <gdsl/gdsl_list.h>
 typedef gdsl_list_t bd_list_t;
 typedef gdsl_compare_func_t bd_compare_func;
 typedef gdsl_map_func_t bd_map_func;
-#endif
+//#endif
 
 
 bd_list_t bd_list_create();

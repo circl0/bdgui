@@ -20,6 +20,7 @@
 #ifndef BD_SYSTEM_H
 #define BD_SYSTEM_H
 
+#include "config.h"
 #include "type/type.h"
 
 // memory

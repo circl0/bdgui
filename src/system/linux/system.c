@@ -17,7 +17,7 @@
 */
 
 
-#ifdef WITH_LINUX
+//#ifdef WITH_LINUX
 
 #include "system/system.h"
 #include "system/thread.h"
@@ -99,4 +99,4 @@ void bd_main_loop()
 
 
 
-#endif
+//#endif

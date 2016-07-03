@@ -20,12 +20,13 @@
 #ifndef INCLUDE_TYPE_QUEUE_H_
 #define INCLUDE_TYPE_QUEUE_H_
 
+#include "config.h"
 #include "type/type.h"
 
-#ifdef WITH_GDSL
+//#ifdef WITH_GDSL
 #include <gdsl/gdsl_queue.h>
 typedef gdsl_queue_t bd_queue_t;
-#endif
+//#endif
 
 bd_queue_t bd_queue_create();
 void bd_queue_destroy(bd_queue_t queue);

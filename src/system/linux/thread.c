@@ -18,7 +18,8 @@
 
 
 #include "system/thread.h"
-#include <pthread.h>
+
+//#ifdef WITH_LINUX
 
 bd_thread_t bd_thread_create(bd_thread_run_func runnable, BD_HANDLE data)
 {
@@ -41,3 +42,5 @@ void bd_thread_detach(bd_thread_t thread)
 {
 	pthread_detach(thread);
 }
+
+//#endif

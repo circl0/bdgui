@@ -19,6 +19,8 @@
 
 #include "system/mutex.h"
 
+//#ifdef WITH_LINUX
+
 bd_mutex_t bd_mutex_create()
 {
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -39,3 +41,6 @@ BD_INT bd_mutex_unlock(bd_mutex_t mutex)
 {
 	return pthread_mutex_unlock(&mutex);
 }
+
+
+//#endif

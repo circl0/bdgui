@@ -16,10 +16,10 @@
  *
 */
 
+#include "type/queue.h"
 
 #ifdef WITH_GDSL
 
-#include "type/queue.h"
 #include "system/system.h"
 
 bd_queue_t bd_queue_create()

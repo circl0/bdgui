@@ -20,12 +20,13 @@
 #ifndef INCLUDE_SYSTEM_THREAD_H_
 #define INCLUDE_SYSTEM_THREAD_H_
 
+#include "config.h"
 #include "type/type.h"
 
-#ifdef WITH_LINUX
+//#ifdef WITH_LINUX
 #include <pthread.h>
 typedef pthread_t bd_thread_t;
-#endif
+//#endif
 //typedef struct bd_thread bd_thread, *bd_thread_t;
 
 typedef BD_HANDLE(*bd_thread_run_func)(BD_HANDLE);

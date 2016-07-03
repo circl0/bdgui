@@ -16,12 +16,10 @@
  *
 */
 
+#include "type/list.h"
 
 #ifdef WITH_GDSL
 
-#include <gdsl/gdsl_types.h>
-#include <gdsl/gdsl_list.h>
-#include "type/list.h"
 #include "system/system.h"
 
 bd_list_t bd_list_create()

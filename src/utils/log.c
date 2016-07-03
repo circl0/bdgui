@@ -25,7 +25,7 @@
 
 void bd_log(BD_STRING tag, BD_STRING format, ...)
 {
-#ifdef WITH_LOG
+//#ifdef WITH_LOG
 	BD_CHAR buf[1024];
 	memset(buf, 0, sizeof(buf));
 	strcat(buf, "[");
@@ -37,5 +37,5 @@ void bd_log(BD_STRING tag, BD_STRING format, ...)
 	vsprintf(buf + length, format, arg_ptr);
 	va_end(arg_ptr);
 	printf(buf);
-#endif
+// #endif
 }

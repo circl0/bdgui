@@ -20,7 +20,7 @@
 #ifndef INCLUDE_UTILS_LOG_H_
 #define INCLUDE_UTILS_LOG_H_
 
-#define WITH_LOG
+//#define WITH_LOG
 
 #include "type/type.h"
 
