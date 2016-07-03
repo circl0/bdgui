@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  BDGUI Team
+　* Copyright (C) 2016  Allen Yuan
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -17,25 +17,25 @@
 */
 
 
-#ifndef BDGUI_SURFACE_H
-#define BDGUI_SURFACE_H
+#include "system/mutex.h"
 
-#include "type/type.h"
+bd_mutex_t bd_mutex_create()
+{
+	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+	return mutex;
+}
 
-typedef struct bd_surface {
-    BD_UINT width;
-    BD_UINT height;
-    BD_HANDLE buffer;
-} bd_surface;
+void bd_mutex_destroy(bd_mutex_t mutex)
+{
+	pthread_mutex_destroy(&mutex);
+}
 
-typedef bd_surface* bd_surface_t;
+BD_INT bd_mutex_lock(bd_mutex_t mutex)
+{
+	return pthread_mutex_lock(&mutex);
+}
 
-bd_surface_t bd_surface_create();
-
-void bd_surface_destroy(bd_surface_t surface);
-
-void bd_surface_draw_line(bd_surface_t surface, BD_UINT x1, BD_UINT y1, BD_UINT x2, BD_UINT y2);
-
-void bd_surface_output(bd_surface_t surface);
-
-#endif //BDGUI_SURFACE_H
+BD_INT bd_mutex_unlock(bd_mutex_t mutex)
+{
+	return pthread_mutex_unlock(&mutex);
+}

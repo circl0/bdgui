@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,13 +16,29 @@
  *
 */
 
+#ifndef BDGUI_TIMER_H
+#define BDGUI_TIMER_H
+
 #include "type/type.h"
+#include "type/object.h"
+#include "system/source.h"
 
-struct bd_timer;
-typedef struct bd_timer bd_timer, *bd_timer_t;
+BD_ABSTRACT_CLASS(bd_timer) {
+	EXTENDS(bd_source);
 
-typedef void(*bd_timer_func)(BD_HANDLE);
+	BD_INT id;
+	BD_ULONG timeout;
 
-bd_timer_t bd_timer_create(BD_UINT milliseconds);
+	void(*constructor)(bd_timer_t self, BD_INT id, BD_ULONG milliseconds);
+	void(*destructor)(bd_timer_t self);
+
+	BD_INT(*start)(bd_timer_t input);
+	BD_INT(*stop)(bd_timer_t input);
+	bd_event_t(*read)(bd_timer_t input);
+
+};
+
+bd_timer_t bd_timer_create(BD_INT id, BD_ULONG timeout);
 void bd_timer_destroy(bd_timer_t timer);
-void bd_timer_set_timeout(bd_timer_t timer, BD_UINT milliseconds);
+
+#endif

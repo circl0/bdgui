@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -12,7 +12,26 @@
 　* GNU General Public License for more details.
 
 　* You should have received a copy of the GNU General Public License
-　* along with this program; if not, write to Shanghai University
-　* 99 Shangda Road, Baoshan District, Shanghai, China
+　* along with this program; if not, mail to <allu_yuan@163.com>
+ *
 */
 
+#ifndef INCLUDE_COMPONENT_WINDOW_H_
+#define INCLUDE_COMPONENT_WINDOW_H_
+
+#include "component/base.h"
+#include "event/base.h"
+
+typedef struct bd_window bd_window, *bd_window_t;
+
+BD_CLASS(bd_window) {
+	BD_EXTENDS(bd_component);
+
+	void(*handle_message)(bd_window_t window, bd_event_t event);
+};
+
+
+
+
+
+#endif 

@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -17,12 +17,13 @@
 */
 
 
-#ifndef INCLUDE_SYSTEM_LINUX_INPUT_H_
-#define INCLUDE_SYSTEM_LINUX_INPUT_H_
+#ifndef INCLUDE_SYSTEM_INPUT_H_
+#define INCLUDE_SYSTEM_INPUT_H_
 
 #include "type/type.h"
 #include "event/base.h"
 #include "system/source.h"
+#include "type/object.h"
 
 typedef enum bd_input_type {
 	BD_INPUT_INVALID = -1,
@@ -31,39 +32,22 @@ typedef enum bd_input_type {
 	BD_INPUT_KEYBOARD
 } bd_input_type;
 
-typedef enum bd_mouse_button_type {
-	BD_INPUT_MOUSE_NONE = 0,
-	BD_INPUT_MOUSE_LEFT,
-	BD_INPUT_MOUSE_MIDDLE,
-	BD_INPUT_MOUSE_RIGHT
-} bd_mouse_button_type;
+#define BD_INPUT_NAME_MAX 255
 
-typedef struct bd_mouse_event {
-	bd_event base;
-	BD_INT x;
-	BD_INT y;
-	bd_mouse_button_type which;
-} bd_mouse_event, *bd_mouse_event_t;
+BD_ABSTRACT_CLASS(bd_input) {
+	EXTENDS(bd_source);
+	char name[BD_INPUT_NAME_MAX];
+	bd_input_type type;
 
-typedef struct bd_touch_event {
-	bd_event base;
-	BD_INT x;
-	BD_INT y;
-	BD_INT which;
-} bd_touch_event, *bd_touch_event_t;
+	void(*constructor)(bd_input_t input, bd_input_type type);
+	void(*destructor)(bd_input_t input);
 
-typedef struct bd_keyboard_event {
-	bd_event base;
-	BD_INT code;
-} bd_keyboard_event, *bd_keyboard_event_t;
+	BD_INT(*open)(bd_input_t input);
+	BD_INT(*close)(bd_input_t input);
+	bd_event_t(*read)(bd_input_t input);
+};
 
-struct bd_input_dev;
-typedef struct bd_input_dev bd_input_dev, *bd_input_dev_t;
-
-bd_input_dev_t bd_input_dev_create(const char* name, bd_input_type type);
-BD_INT bd_input_dev_open(bd_input_dev_t dev);
-BD_INT bd_input_dev_close(bd_input_dev_t dev, BD_UINT size);
-
-bd_event_t bd_input_dev_read_event(bd_input_dev_t dev);
+bd_input_t bd_input_create(const char* name, bd_input_type type);
+void bd_input_destroy(bd_input_t input);
 
 #endif /* INCLUDE_SYSTEM_LINUX_INPUT_H_ */

@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -19,13 +19,14 @@
 
 #ifdef WITH_GDSL
 
+#include <gdsl/gdsl_types.h>
 #include <gdsl/gdsl_list.h>
 #include "type/list.h"
 #include "system/system.h"
 
 bd_list_t bd_list_create()
 {
-	return gdsl_list_alloc("", bd_malloc, bd_free);
+	return gdsl_list_alloc("", BD_NULL, BD_NULL);
 }
 
 void bd_list_destroy(bd_list_t list)
@@ -44,19 +45,19 @@ BD_HANDLE bd_list_first(bd_list_t list)
 }
 
 
-void bd_list_for_each(bd_list_t list, BD_INT(*map)(BD_HANDLE, BD_INT, BD_HANDLE), BD_HANDLE data)
+void bd_list_for_each(bd_list_t list, bd_map_func func, BD_HANDLE data)
 {
-	gdsl_list_map_forward(list, map, data);
+	gdsl_list_map_forward(list, func, data);
 }
 
-BD_HANDLE bd_list_search(bd_list_t list, BD_LONGINT(*compare)(const BD_HANDLE, BD_HANDLE), BD_HANDLE value)
+BD_HANDLE bd_list_search(bd_list_t list, bd_compare_func func, BD_HANDLE value)
 {
-	return gdsl_list_search(list, compare, value);
+	return gdsl_list_search(list, func, value);
 }
 
-BD_HANDLE bd_list_remove(bd_list_t list, BD_LONGINT(*compare)(const BD_HANDLE, BD_HANDLE), BD_HANDLE value)
+BD_HANDLE bd_list_remove(bd_list_t list, bd_compare_func func, BD_HANDLE value)
 {
-	return gdsl_list_delete(list, compare, value);
+	return gdsl_list_delete(list, func, value);
 }
 
 #endif

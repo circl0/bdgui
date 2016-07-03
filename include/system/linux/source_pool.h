@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  BDGUI Team
+　* Copyright (C) 2016  Allen Yuan
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,26 +16,20 @@
  *
 */
 
+#ifndef INCLUDE_SYSTEM_LINUX_SOURCE_POOL_H_
+#define INCLUDE_SYSTEM_LINUX_SOURCE_POOL_H_
 
-#ifndef BDGUI_SURFACE_H
-#define BDGUI_SURFACE_H
+#include "system/source.h"
+#include "type/object.h"
+#include "system/source_pool.h"
 
-#include "type/type.h"
+BD_CLASS(bd_linux_source_pool) {
+	BD_EXTENDS(bd_source_pool);
 
-typedef struct bd_surface {
-    BD_UINT width;
-    BD_UINT height;
-    BD_HANDLE buffer;
-} bd_surface;
+	struct pollfd* fds;
 
-typedef bd_surface* bd_surface_t;
+	void(*constructor)(bd_linux_source_pool_t self, BD_UINT size);
+	void(*destructor)(bd_linux_source_pool_t self);
+};
 
-bd_surface_t bd_surface_create();
-
-void bd_surface_destroy(bd_surface_t surface);
-
-void bd_surface_draw_line(bd_surface_t surface, BD_UINT x1, BD_UINT y1, BD_UINT x2, BD_UINT y2);
-
-void bd_surface_output(bd_surface_t surface);
-
-#endif //BDGUI_SURFACE_H
+#endif 

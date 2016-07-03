@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,73 +16,29 @@
  *
 */
 
-
+#include "type/type.h"
 #include "system/system.h"
 #include "event/base.h"
 #include "event/map.h"
 #include "type/list.h"
+#include "type/object.h"
 
-static bd_queue_t bd_event_queue_get()
+
+void bd_event_constructor(bd_event_t self, bd_event_id id)
 {
-	static bd_queue_t event_queue = BD_NULL;
-    if (event_queue == BD_NULL) {
-        event_queue = bd_queue_create();
-    }
-    return event_queue;
+	self->id = id;
+	self->sender = BD_NULL;
 }
 
-static BD_INT bd_event_handler_run(BD_HANDLE e, BD_INT location, BD_HANDLE data)
+void bd_event_destructor(bd_event_t self)
 {
-	bd_event_handler_t handler = (bd_event_handler_t)e;
-	if (handler == BD_NULL) {
-		return 1;
-	}
-	handler((bd_event_t)data);
-	return 1;
+
 }
 
-bd_event_t bd_event_create()
-{
-	bd_event_t event = (bd_event_t) bd_malloc(sizeof(bd_event));
-	return event;
-}
+BD_ABSTRACT_CLASS_CONSTRUCTOR_START(bd_event)
+BD_SUPER_CONSTRUCTOR(bd_object)
+BD_CLASS_METHOD(constructor, bd_event_constructor)
+BD_CLASS_METHOD(destructor, bd_event_destructor)
+BD_ABSTRACT_CLASS_CONSTRUCTOR_END
 
-void bd_event_destroy(bd_event_t event)
-{
-	if (event == BD_NULL) {
-		return;
-	}
-	bd_free(event);
-}
 
-void bd_event_send(bd_event_t ptr)
-{
-	bd_queue_t event_queue = bd_event_queue_get();
-    if (event_queue == BD_NULL) {
-        return;
-    }
-    bd_queue_push(event_queue, ptr);
-}
-
-void bd_event_handle()
-{
-	bd_queue_t event_queue = bd_event_queue_get();
-	if (event_queue == BD_NULL) {
-        return;
-    }
-    bd_event_t event = (bd_event_t) bd_queue_get(event_queue);
-    if (event == BD_NULL) {
-    	return;
-    }
-    bd_list_t list = bd_get_message_handlers(event->id, event->sender);
-    bd_list_for_each(list, bd_event_handler_run, event);
-    bd_free(event);
-}
-
-void bd_event_system_init()
-{
-	bd_main_loop();
-	while(1) {
-		bd_event_handle();
-	}
-}

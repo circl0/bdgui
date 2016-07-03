@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@
 
 bd_queue_t bd_queue_create()
 {
-	return gdsl_queue_alloc("", bd_malloc, bd_free);
+	return gdsl_queue_alloc("", BD_NULL, BD_NULL);
 }
 
 void bd_queue_destroy(bd_queue_t queue)

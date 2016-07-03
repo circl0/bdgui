@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  BDGUI Team
+　* Copyright (C) 2016  Allen Yuan
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,26 +16,22 @@
  *
 */
 
+#ifndef INCLUDE_EVENT_QUEUE_H_
+#define INCLUDE_EVENT_QUEUE_H_
 
-#ifndef BDGUI_SURFACE_H
-#define BDGUI_SURFACE_H
+#include "type/queue.h"
+#include "event/base.h"
+#include "system/mutex.h"
 
-#include "type/type.h"
+typedef struct bd_event_queue {
+	bd_queue_t queue;
+	bd_mutex_t mutex;
+} bd_event_queue, *bd_event_queue_t;
 
-typedef struct bd_surface {
-    BD_UINT width;
-    BD_UINT height;
-    BD_HANDLE buffer;
-} bd_surface;
+bd_event_queue_t bd_event_queue_create();
+void bd_event_queue_destroy(bd_event_queue_t queue);
 
-typedef bd_surface* bd_surface_t;
+void bd_event_queue_push(bd_event_queue_t queue, bd_event_t event);
+bd_event_t bd_event_queue_get(bd_event_queue_t queue);
 
-bd_surface_t bd_surface_create();
-
-void bd_surface_destroy(bd_surface_t surface);
-
-void bd_surface_draw_line(bd_surface_t surface, BD_UINT x1, BD_UINT y1, BD_UINT x2, BD_UINT y2);
-
-void bd_surface_output(bd_surface_t surface);
-
-#endif //BDGUI_SURFACE_H
+#endif 

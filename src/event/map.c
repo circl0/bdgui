@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@
 #include "system/system.h"
 
 typedef struct bd_sender {
-	bd_object_t object;
+	struct bd_object* object;
 	bd_list_t handlers;
 } bd_sender, *bd_sender_t;
 
@@ -37,7 +37,7 @@ static BD_LONGINT bd_find_sender_by_object(const BD_HANDLE e, BD_HANDLE value)
 
 static BD_LONGINT bd_find_handler_by_object(const BD_HANDLE e, BD_HANDLE value)
 {
-	if (((bd_sender_t)e)->object == (bd_object_t)value) {
+	if (((bd_sender_t)e)->object == (struct bd_object*)value) {
 		return 0;
 	}
 	return 1;

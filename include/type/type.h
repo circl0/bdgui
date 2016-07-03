@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 #define BD_TYPE_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define BD_HANDLE   void*
 #define BD_INT      int
@@ -33,6 +34,8 @@
 #define BD_CHAR		char
 #define BD_LONGINT	long int
 
+#define BD_SIZE		size_t
+
 #define BD_UINT8	uint8_t
 #define BD_UINT16	uint16_t
 #define BD_UINT32	uint32_t
@@ -42,10 +45,12 @@
 #define BD_NULL     0
 
 typedef enum bd_type {
-    BD_TYPE_INVALID = -1,
-	BD_TYPE_COMPONENT = 0,
-	BD_TYPE_EVENT = 1,
-	BD_TYPE_DEV = 2
+	BD_TYPE_INVALID = -1,
+	BD_TYPE_OBJECT = -1,
+	BD_TYPE_APPLICATION,
+	BD_TYPE_COMPONENT,
+	BD_TYPE_EVENT,
+	BD_TYPE_DEV
 } bd_type;
 
 typedef struct bd_color {

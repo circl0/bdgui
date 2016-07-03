@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,20 +16,18 @@
  *
 */
 
+#include "type/object.h"
 #include "system/system.h"
 #include "system/timer.h"
+#include "system/linux/timer.h"
 #include "system/source.h"
+#include "event/events.h"
 #include <sys/timerfd.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 
-struct bd_timer {
-	bd_source base;
-	BD_UINT timeout;
-};
-
-static void bd_timer_fd_set_timeout(BD_INT fd, BD_UINT milliseconds)
+static void bd_linux_timer_fd_set_timeout(BD_INT fd, BD_ULONG milliseconds)
 {
 	struct itimerspec timerspec;
 	timerspec.it_value.tv_sec = milliseconds / 1000;
@@ -39,18 +37,11 @@ static void bd_timer_fd_set_timeout(BD_INT fd, BD_UINT milliseconds)
 	timerfd_settime(fd, CLOCK_MONOTONIC, 0, &timerspec);
 }
 
-bd_timer_t bd_timer_create(BD_UINT milliseconds)
+bd_timer_t bd_timer_create(BD_INT id, BD_ULONG timeout)
 {
-	bd_timer_t timer = (bd_timer_t) bd_malloc(sizeof(bd_timer));
-	if (timer == BD_NULL) {
-		return BD_NULL;
-	}
-	timer->base.type = BD_SOURCE_TIMER;
-	timer->base.fd = timerfd_create(CLOCK_MONOTONIC, 0);
-	timer->timeout = milliseconds;
-	bd_timer_fd_set_timeout(timer->base.fd, milliseconds);
-
-	return timer;
+	bd_linux_timer_t linux_timer = bd_linux_timer_new();
+	linux_timer->constructor(linux_timer, id, timeout);
+	return BD_SUP(linux_timer, bd_timer);
 }
 
 void bd_timer_destroy(bd_timer_t timer)
@@ -58,15 +49,57 @@ void bd_timer_destroy(bd_timer_t timer)
 	if (timer == BD_NULL) {
 		return;
 	}
-	close(timer->base.fd);
-	bd_free(timer);
+	bd_linux_timer_t linux_timer = BD_SUB(timer, bd_timer, bd_linux_timer);
+	bd_linux_timer_delete(linux_timer);
 }
 
-void bd_timer_set_timeout(bd_timer_t timer, BD_UINT milliseconds)
+void bd_linux_timer_constructor(bd_linux_timer_t self, BD_INT id, BD_ULONG milliseconds)
 {
-	if (timer == BD_NULL) {
+	if (self == BD_NULL) {
 		return;
 	}
-	bd_timer_fd_set_timeout(timer->base.fd, milliseconds);
+	bd_timer_t timer = BD_SUP(self, bd_timer);
+	timer->constructor(timer, id, milliseconds);
 }
+
+void bd_linux_timer_destructor(bd_linux_timer_t self)
+{
+	if (self == BD_NULL) {
+		return;
+	}
+	bd_timer_t timer = BD_SUP(self, bd_timer);
+	timer->destructor(timer);
+}
+
+BD_INT bd_linux_timer_start(bd_timer_t self)
+{
+	bd_linux_timer_t linux_timer = BD_SUB(self, bd_timer, bd_linux_timer);
+	linux_timer->fd = timerfd_create(CLOCK_MONOTONIC, 0);
+	bd_linux_timer_fd_set_timeout(linux_timer->fd, self->timeout);
+	return 0;
+}
+
+BD_INT bd_linux_timer_stop(bd_timer_t self)
+{
+	return 0;
+}
+
+bd_event_t bd_linux_timer_read_event(bd_timer_t self)
+{
+	bd_timer_event_t event = bd_timer_event_new();
+	event->constructor(event);
+	event->timer = self;
+	return BD_SUP(event, bd_event);
+}
+
+BD_CLASS_CONSTRUCTOR_START(bd_linux_timer)
+BD_SUPER_CONSTRUCTOR(bd_timer)
+BD_CLASS_METHOD(constructor, bd_linux_timer_constructor)
+BD_CLASS_METHOD(destructor, bd_linux_timer_destructor)
+BD_CLASS_METHOD(bd_timer.start, bd_linux_timer_start)
+BD_CLASS_METHOD(bd_timer.stop, bd_linux_timer_stop)
+BD_CLASS_METHOD(bd_timer.read, bd_linux_timer_read_event)
+BD_CLASS_CONSTRUCTOR_END
+
+BD_CLASS_DESTRUCTOR(bd_linux_timer)
 

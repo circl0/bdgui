@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -25,6 +25,8 @@
 #ifdef WITH_GDSL
 #include <gdsl/gdsl_list.h>
 typedef gdsl_list_t bd_list_t;
+typedef gdsl_compare_func_t bd_compare_func;
+typedef gdsl_map_func_t bd_map_func;
 #endif
 
 
@@ -36,8 +38,8 @@ BD_HANDLE bd_list_get(bd_list_t list);
 
 BD_HANDLE bd_list_first(bd_list_t list);
 
-BD_HANDLE bd_list_remove(bd_list_t list, BD_LONGINT(*compare)(const BD_HANDLE, BD_HANDLE), BD_HANDLE value);
-void bd_list_for_each(bd_list_t list, BD_INT(*map)(BD_HANDLE, BD_INT, BD_HANDLE), BD_HANDLE data);
-BD_HANDLE bd_list_search(bd_list_t list, BD_LONGINT(*compare)(const BD_HANDLE, BD_HANDLE), BD_HANDLE value);
+BD_HANDLE bd_list_remove(bd_list_t list, bd_compare_func func, BD_HANDLE value);
+void bd_list_for_each(bd_list_t list, bd_map_func func, BD_HANDLE data);
+BD_HANDLE bd_list_search(bd_list_t list, bd_compare_func func, BD_HANDLE value);
 
 #endif

@@ -16,18 +16,20 @@
  *
 */
 
+#ifndef INCLUDE_SYSTEM_MUTEX_H_
+#define INCLUDE_SYSTEM_MUTEX_H_
 
-#ifndef BD_COMPONENT_H
-#define BD_COMPONENT_H
+#ifdef WITH_LINUX
+#include <pthread.h>
+typedef pthread_mutex_t bd_mutex_t;
+#endif
 
-#include "type/object.h"
+#include "type/type.h"
 
-typedef struct bd_component {
-    bd_object base;
-    //bd_window_t parent;
-    void (*render)(void);
-} bd_component;
+bd_mutex_t bd_mutex_create();
+void bd_mutex_destroy(bd_mutex_t mutex);
 
-typedef bd_component* bd_component_t;
+BD_INT bd_mutex_lock(bd_mutex_t mutex);
+BD_INT bd_mutex_unlock(bd_mutex_t mutex);
 
-#endif //BD_COMPONENT_H
+#endif 

@@ -21,5 +21,45 @@
 #define BDGUI_EVENTS_H
 
 #include "event/base.h"
+#include "system/timer.h"
+
+typedef enum bd_mouse_button_type {
+	BD_INPUT_MOUSE_NONE = 0,
+	BD_INPUT_MOUSE_LEFT,
+	BD_INPUT_MOUSE_MIDDLE,
+	BD_INPUT_MOUSE_RIGHT
+} bd_mouse_button_type;
+
+BD_CLASS(bd_mouse_event) {
+	EXTENDS(bd_event);
+	BD_INT x;
+	BD_INT y;
+	bd_mouse_button_type which;
+    void(*constructor)(bd_mouse_event_t self);
+    void(*destructor)(bd_mouse_event_t self);
+};
+
+BD_CLASS(bd_touch_event) {
+	EXTENDS(bd_event);
+	BD_INT x;
+	BD_INT y;
+    void(*constructor)(bd_touch_event_t self);
+    void(*destructor)(bd_touch_event_t self);
+};
+
+BD_CLASS(bd_keyboard_event) {
+	EXTENDS(bd_event);
+	bd_event base;
+	BD_INT code;
+    void(*constructor)(bd_keyboard_event_t self);
+    void(*destructor)(bd_keyboard_event_t self);
+};
+
+BD_CLASS(bd_timer_event) {
+	EXTENDS(bd_event);
+	bd_timer_t timer;
+    void(*constructor)(bd_timer_event_t self);
+    void(*destructor)(bd_timer_event_t self);
+};
 
 #endif //BDGUI_EVENTS_H

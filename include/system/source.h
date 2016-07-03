@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -17,37 +17,29 @@
 */
 
 
-#ifndef INCLUDE_SYSTEM_LINUX_SOURCE_H_
-#define INCLUDE_SYSTEM_LINUX_SOURCE_H_
+#ifndef INCLUDE_SYSTEM_SOURCE_H
+#define INCLUDE_SYSTEM_SOURCE_H
 
 #include "type/type.h"
+#include "type/object.h"
+#include "event/base.h"
 
 typedef enum bd_source_type {
 	BD_SOURCE_INPUT = 0,
-	BD_SOURCE_TIMER = 1,
+	BD_SOURCE_TIMER,
 } bd_source_type;
 
-typedef struct bd_source {
+BD_ABSTRACT_CLASS(bd_source) {
+	BD_EXTENDS(bd_object);
 	bd_source_type type;
-	BD_INT fd;
-} bd_source, *bd_source_t;
 
-typedef struct bd_source_pool bd_source_pool, *bd_source_pool_t;
+	void(*constructor)(bd_source_t self, bd_source_type type);
+	void(*destructor)(bd_source_t self);
+	BD_INT (*init)(bd_source_t source);
+	BD_INT (*deinit)(bd_source_t source);
+	bd_event_t (*read_events)(bd_source_t source);
+};
 
-typedef void(*bd_source_pool_events_func)(bd_source_pool_t pool);
-
-bd_source_pool_t bd_source_pool_create(BD_UINT size);
-void bd_source_pool_destroy(bd_source_pool_t pool);
-
-
-void bd_source_pool_set_time_out(bd_source_pool_t pool, BD_INT timeout);
-void bd_source_pool_push(bd_source_pool_t pool, bd_source_t source);
-void bd_source_pool_clear(bd_source_pool_t pool);
-void bd_source_pool_wait_for_events(bd_source_pool_t pool, bd_source_pool_events_func func);
-
-BD_UINT bd_source_pool_size(bd_source_pool_t pool);
-bd_source_t bd_source_pool_get(bd_source_pool_t pool, BD_UINT i);
-BD_INT bd_source_pool_has_event(bd_source_pool_t pool, BD_UINT i);
-
+void bd_source_destroy(bd_source_t source);
 
 #endif /* INCLUDE_SYSTEM_LINUX_SOURCE_H_ */

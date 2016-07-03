@@ -16,37 +16,27 @@
  *
 */
 
-
-#ifndef BD_EVENT_H
-#define BD_EVENT_H
-
-#include "component/base.h"
+#include "event/events.h"
 #include "type/object.h"
-#include "type/type.h"
+#include "event/base.h"
 
-#define BD_EVENT_NUM_MAX	256
+#define BD_DECLARE_EVENT(class, id) \
+	void bd_##class##_constructor(class##_t event)\
+	{\
+		bd_event_t abstract_event = BD_SUP(event, bd_event);\
+		abstract_event->constructor(abstract_event, id);\
+	}\
+	void bd_##class##_destructor(class##_t event)\
+	{\
+		\
+	}\
+	BD_CLASS_CONSTRUCTOR_START(class)\
+	BD_SUPER_CONSTRUCTOR(bd_event)\
+	BD_CLASS_METHOD(constructor, bd_##class##_constructor)\
+	BD_CLASS_METHOD(destructor, bd_##class##_destructor)\
+	BD_CLASS_CONSTRUCTOR_END
 
-typedef enum bd_event_id {
-    BD_EVENT_INVALID = -1,
-	BD_EVENT_ON_TIMER,
-	BD_EVENT_ON_MOUSE,
-	BD_EVENT_ON_KEYBOARD,
-	BD_EVENT_ON_TOUCH,
-	BD_EVENT_MAX = BD_EVENT_NUM_MAX,
-} bd_event_id;
-
-
-BD_ABSTRACT_CLASS(bd_event) {
-	BD_EXTENDS(bd_object);
-
-    bd_event_id id;
-    bd_object_t sender;
-
-    void(*constructor)(bd_event_t self, bd_event_id id);
-    void(*destructor)(bd_event_t self);
-};
-
-typedef void(*bd_event_handler_t)(bd_event_t);
-
-
-#endif
+BD_DECLARE_EVENT(bd_mouse_event, BD_EVENT_ON_MOUSE)
+BD_DECLARE_EVENT(bd_keyboard_event, BD_EVENT_ON_KEYBOARD)
+BD_DECLARE_EVENT(bd_touch_event, BD_EVENT_ON_TOUCH)
+BD_DECLARE_EVENT(bd_timer_event, BD_EVENT_ON_TIMER)
