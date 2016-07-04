@@ -16,15 +16,17 @@
  *
 */
 
-#include "system/source.h"
-#include "system/system.h"
-#include "utils/log.h"
 #include <string.h>
 #include <sys/poll.h>
+#include "system/source.h"
+#include "system/system.h"
+#include "system/timer.h"
+#include "system/linux/timer.h"
+#include "system/input.h"
 #include "system/linux/input.h"
 #include "system/linux/source_pool.h"
 #include "system/source_pool.h"
-#include "system/input.h"
+#include "utils/log.h"
 
 
 #define SOURCE_TAG "source"
@@ -83,6 +85,9 @@ void bd_linux_source_pool_push(bd_source_pool_t pool, bd_source_t source)
 	case BD_SOURCE_INPUT:
 		fp->fd = BD_SUB2(source, bd_source, bd_input, bd_linux_input)->fd;
 		break;
+	case BD_SOURCE_TIMER:
+		fp->fd = BD_SUB2(source, bd_source, bd_timer, bd_linux_timer)->fd;
+		break;
 	default:
 		break;
 	}
@@ -102,7 +107,7 @@ void bd_linux_source_pool_clear(bd_source_pool_t pool)
 	linux_pool->bd_source_pool.size = 0;
 }
 
-void bd_linux_source_pool_wait_for_events(bd_source_pool_t pool, void(*bd_source_pool_events_func)(bd_source_pool_t))
+void bd_linux_source_pool_wait_for_events(bd_source_pool_t pool, bd_application_t app, void(*bd_source_pool_events_func)(bd_source_pool_t, bd_application_t))
 {
 	bd_linux_source_pool_t linux_pool = BD_SUB(pool, bd_source_pool, bd_linux_source_pool);
 	if (linux_pool == BD_NULL) {
@@ -112,7 +117,7 @@ void bd_linux_source_pool_wait_for_events(bd_source_pool_t pool, void(*bd_source
 	BD_INT result = poll(linux_pool->fds, linux_pool->bd_source_pool.size, -1);
 
 	if ((result > 0) && bd_source_pool_events_func != BD_NULL) {
-		bd_source_pool_events_func(pool);
+		bd_source_pool_events_func(pool, app);
 	}
 
 	for (BD_INT i = 0; i < linux_pool->bd_source_pool.size; ++i) {

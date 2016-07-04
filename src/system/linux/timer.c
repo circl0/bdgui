@@ -22,6 +22,7 @@
 #include "system/linux/timer.h"
 #include "system/source.h"
 #include "event/events.h"
+#include "utils/log.h"
 #include <sys/timerfd.h>
 #include <sys/time.h>
 #include <time.h>

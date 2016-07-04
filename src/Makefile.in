@@ -108,12 +108,14 @@ libbdgui_a_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libbdgui_a_OBJECTS = component/window.$(OBJEXT) \
 	application/application.$(OBJEXT) \
-	application/windows_manager.$(OBJEXT) event/base.$(OBJEXT) \
-	event/events.$(OBJEXT) event/map.$(OBJEXT) \
-	event/queue.$(OBJEXT) render/painter.$(OBJEXT) \
-	render/surface.$(OBJEXT) system/input.$(OBJEXT) \
-	system/source.$(OBJEXT) system/source_pool.$(OBJEXT) \
-	system/timer.$(OBJEXT) system/linux/display.$(OBJEXT) \
+	application/windows_manager.$(OBJEXT) \
+	component/component.$(OBJEXT) component/window.$(OBJEXT) \
+	event/base.$(OBJEXT) event/events.$(OBJEXT) \
+	event/map.$(OBJEXT) event/queue.$(OBJEXT) \
+	render/painter.$(OBJEXT) render/surface.$(OBJEXT) \
+	system/input.$(OBJEXT) system/source.$(OBJEXT) \
+	system/source_pool.$(OBJEXT) system/timer.$(OBJEXT) \
+	system/linux/display.$(OBJEXT) \
 	system/linux/framebuffer.$(OBJEXT) \
 	system/linux/input.$(OBJEXT) system/linux/mutex.$(OBJEXT) \
 	system/linux/source_pool.$(OBJEXT) \
@@ -272,6 +274,8 @@ noinst_LIBRARIES = libbdgui.a
 libbdgui_a_SOURCES = component/window.c \
                     application/application.c \
                     application/windows_manager.c \
+                    component/component.c \
+                    component/window.c \
                     event/base.c \
                     event/events.c \
                     event/map.c \
@@ -351,6 +355,8 @@ application/application.$(OBJEXT): application/$(am__dirstamp) \
 	application/$(DEPDIR)/$(am__dirstamp)
 application/windows_manager.$(OBJEXT): application/$(am__dirstamp) \
 	application/$(DEPDIR)/$(am__dirstamp)
+component/component.$(OBJEXT): component/$(am__dirstamp) \
+	component/$(DEPDIR)/$(am__dirstamp)
 event/$(am__dirstamp):
 	@$(MKDIR_P) event
 	@: > event/$(am__dirstamp)
@@ -462,6 +468,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@application/$(DEPDIR)/application.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@application/$(DEPDIR)/windows_manager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@component/$(DEPDIR)/component.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@component/$(DEPDIR)/window.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@event/$(DEPDIR)/base.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@event/$(DEPDIR)/events.Po@am__quote@

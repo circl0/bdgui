@@ -22,16 +22,14 @@
 #include "component/base.h"
 #include "event/base.h"
 
-typedef struct bd_window bd_window, *bd_window_t;
-
 BD_CLASS(bd_window) {
 	BD_EXTENDS(bd_component);
-	void(*render)(bd_window_t window);
+
 	void(*handle_event)(bd_window_t window, bd_event_t event);
+
+	void(*constructor)(bd_window_t window);
+	void(*destructor)(bd_window_t window);
 };
-
-
-
 
 
 #endif 

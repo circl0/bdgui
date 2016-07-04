@@ -3,6 +3,8 @@ noinst_LIBRARIES=libbdgui.a
 libbdgui_a_SOURCES= component/window.c \
                     application/application.c \
                     application/windows_manager.c \
+                    component/component.c \
+                    component/window.c \
                     event/base.c \
                     event/events.c \
                     event/map.c \

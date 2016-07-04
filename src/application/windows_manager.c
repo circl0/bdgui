@@ -18,6 +18,7 @@
 
 #include "application/windows_manager.h"
 #include "type/object.h"
+#include "utils/log.h"
 
 bd_windows_manager_t bd_windows_manager_create()
 {
@@ -45,7 +46,7 @@ static BD_INT bd_windows_manager_render_function(const BD_HANDLE e, BD_INT locat
 {
 	const bd_window_t window = (const bd_window_t) e;
 	if (window != BD_NULL) {
-		window->render(window);
+		BD_SUP(window, bd_component)->render(BD_SUP(window, bd_component));
 	}
 	return 1;
 }
@@ -62,6 +63,7 @@ static BD_INT bd_windows_manager_handle_event_function(const BD_HANDLE e, BD_INT
 {
 	const bd_window_t window = (const bd_window_t) e;
 	bd_event_t event = (bd_event_t) data;
+
 	if (window != BD_NULL && event != BD_NULL) {
 		window->handle_event(window, event);
 	}
@@ -70,10 +72,13 @@ static BD_INT bd_windows_manager_handle_event_function(const BD_HANDLE e, BD_INT
 
 void bd_windows_manager_handle_event(bd_windows_manager_t manager, bd_event_t event)
 {
-	if (manager == BD_NULL) {
+	if (manager == BD_NULL || event == BD_NULL) {
 		return;
 	}
-	bd_list_for_each(manager->windows_list, bd_windows_manager_handle_event_function, BD_NULL);
+	bd_list_for_each(manager->windows_list, bd_windows_manager_handle_event_function, event);
+	if (event->id == BD_EVENT_ON_TIMER) {
+		manager->render(manager);
+	}
 }
 
 void bd_windows_manager_add_window(bd_windows_manager_t manager, bd_window_t window)

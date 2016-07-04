@@ -17,6 +17,7 @@
 */
 
 #include "application/application.h"
+#include "utils/log.h"
 
 static BD_HANDLE bd_application_run_func(BD_HANDLE data)
 {
@@ -26,6 +27,9 @@ static BD_HANDLE bd_application_run_func(BD_HANDLE data)
 	}
 	while (1) {
 		bd_event_t event = bd_event_queue_get(app->event_queue);
+		if (event == BD_NULL) {
+			continue;
+		}
 		app->windows_mananger->handler_event(app->windows_mananger, event);
 		bd_free(event);
 	}
@@ -38,7 +42,7 @@ void bd_application_constructor(bd_application_t app)
 		return;
 	}
 	app->windows_mananger = bd_windows_manager_create();
-	app->thread = bd_thread_create(bd_application_run_func, app);
+	app->thread = bd_thread_create(bd_application_run_func);
 	app->event_queue = bd_event_queue_create();
 }
 
@@ -59,7 +63,7 @@ void bd_application_run(bd_application_t app, bd_window_t main_window)
 	}
 	app->windows_mananger->add(app->windows_mananger, main_window);
 	app->thread->start(app->thread, app);
-	bd_main_loop();
+	bd_main_loop(app);
 }
 
 void bd_application_send_event(bd_application_t app, bd_event_t event)

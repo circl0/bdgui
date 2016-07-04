@@ -23,7 +23,7 @@
 
 #include <pthread.h>
 
-bd_thread_t bd_thread_create(BD_HANDLE (*run)(BD_HANDLE data), BD_HANDLE data)
+bd_thread_t bd_thread_create(BD_HANDLE (*run)(BD_HANDLE data))
 {
 	bd_thread_t thread = bd_thread_new();
 	thread->constructor(thread, run);
@@ -47,7 +47,7 @@ void bd_linux_thread_destructor(bd_thread_t thread)
 
 BD_INT bd_linux_thread_start(bd_thread_t thread, BD_HANDLE data)
 {
-	return pthread_create(&thread->id, BD_NULL, thread->run, data);
+	return pthread_create(&(thread->id), BD_NULL, thread->run, data);
 }
 
 BD_INT bd_linux_thread_join(bd_thread_t thread)
@@ -64,6 +64,7 @@ BD_CLASS_CONSTRUCTOR_START(bd_thread)
 BD_SUPER_CONSTRUCTOR(bd_object)
 BD_CLASS_METHOD(constructor, bd_linux_thread_constructor)
 BD_CLASS_METHOD(destructor, bd_linux_thread_destructor)
+BD_CLASS_METHOD(start, bd_linux_thread_start)
 BD_CLASS_METHOD(join, bd_linux_thread_join)
 BD_CLASS_METHOD(detach, bd_linux_thread_detach)
 BD_CLASS_CONSTRUCTOR_END

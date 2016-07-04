@@ -16,3 +16,34 @@
  *
 */
 
+#include "component/window.h"
+#include "utils/log.h"
+
+void bd_window_constructor(bd_window_t window)
+{
+
+}
+
+void bd_window_destructor(bd_window_t window)
+{
+
+}
+
+void bd_window_render(bd_component_t window)
+{
+	bd_log("window", "render handle: %ld\n", window);
+}
+
+void bd_window_handle_event(bd_window_t window, bd_event_t event)
+{
+	bd_log("window", "handle_event handle: %ld event_id: %d\n", window, event->id);
+}
+
+BD_CLASS_CONSTRUCTOR_START(bd_window)
+BD_SUPER_CONSTRUCTOR(bd_component)
+BD_CLASS_METHOD(constructor, bd_window_constructor)
+BD_CLASS_METHOD(destructor, bd_window_destructor)
+BD_CLASS_METHOD(bd_component.render, bd_window_render)
+BD_CLASS_METHOD(handle_event, bd_window_handle_event)
+BD_CLASS_CONSTRUCTOR_END
+

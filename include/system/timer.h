@@ -32,9 +32,9 @@ BD_ABSTRACT_CLASS(bd_timer) {
 	void(*constructor)(bd_timer_t self, BD_INT id, BD_ULONG milliseconds);
 	void(*destructor)(bd_timer_t self);
 
-	BD_INT(*start)(bd_timer_t input);
-	BD_INT(*stop)(bd_timer_t input);
-	bd_event_t(*read)(bd_timer_t input);
+	BD_INT(*start)(bd_timer_t timer);
+	BD_INT(*stop)(bd_timer_t timer);
+	bd_event_t(*read)(bd_timer_t timer);
 
 };
 

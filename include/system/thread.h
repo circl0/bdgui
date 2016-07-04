@@ -39,7 +39,7 @@ BD_CLASS(bd_thread) {
 
 };
 
-bd_thread_t bd_thread_create(BD_HANDLE (*run)(BD_HANDLE data), BD_HANDLE data);
+bd_thread_t bd_thread_create(BD_HANDLE (*run)(BD_HANDLE data));
 
 void bd_thread_destroy(bd_thread_t thread);
 
