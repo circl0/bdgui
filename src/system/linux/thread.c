@@ -21,10 +21,13 @@
 
 //#ifdef WITH_LINUX
 
-bd_thread_t bd_thread_create(bd_thread_run_func runnable, BD_HANDLE data)
+#include <pthread.h>
+
+bd_thread_t bd_thread_create(BD_HANDLE (*run)(BD_HANDLE data), BD_HANDLE data)
 {
-	bd_thread_t thread;
-	pthread_create(&thread, NULL, runnable, data);
+	bd_thread_t thread = bd_thread_new();
+	thread->constructor(thread, run);
+	thread->start(thread, data);
 	return thread;
 }
 
@@ -33,14 +36,37 @@ void bd_thread_destroy(bd_thread_t thread)
 
 }
 
-void bd_thread_join(bd_thread_t thread)
+void bd_linux_thread_constructor(bd_thread_t thread, BD_HANDLE (*run)(BD_HANDLE data))
 {
-	pthread_join(thread, NULL);
+	thread->run = run;
 }
 
-void bd_thread_detach(bd_thread_t thread)
+void bd_linux_thread_destructor(bd_thread_t thread)
 {
-	pthread_detach(thread);
+	thread->detach(thread);
 }
+
+BD_INT bd_linux_thread_start(bd_thread_t thread, BD_HANDLE data)
+{
+	return pthread_create(&thread->id, BD_NULL, thread->run, data);
+}
+
+BD_INT bd_linux_thread_join(bd_thread_t thread)
+{
+	return pthread_join(thread->id, NULL);
+}
+
+BD_INT bd_linux_thread_detach(bd_thread_t thread)
+{
+	return pthread_detach(thread->id);
+}
+
+BD_CLASS_CONSTRUCTOR_START(bd_thread)
+BD_SUPER_CONSTRUCTOR(bd_object)
+BD_CLASS_METHOD(constructor, bd_linux_thread_constructor)
+BD_CLASS_METHOD(destructor, bd_linux_thread_destructor)
+BD_CLASS_METHOD(join, bd_linux_thread_join)
+BD_CLASS_METHOD(detach, bd_linux_thread_detach)
+BD_CLASS_CONSTRUCTOR_END
 
 //#endif

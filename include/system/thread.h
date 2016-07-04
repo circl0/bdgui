@@ -22,21 +22,25 @@
 
 #include "config.h"
 #include "type/type.h"
+#include "type/object.h"
 
-//#ifdef WITH_LINUX
-#include <pthread.h>
-typedef pthread_t bd_thread_t;
-//#endif
-//typedef struct bd_thread bd_thread, *bd_thread_t;
+BD_CLASS(bd_thread) {
+	BD_EXTENDS(bd_object);
 
-typedef BD_HANDLE(*bd_thread_run_func)(BD_HANDLE);
+	BD_ULONGINT id;
 
-bd_thread_t bd_thread_create(bd_thread_run_func runnable, BD_HANDLE data);
+	void (*constructor)(bd_thread_t thread, BD_HANDLE (*run)(BD_HANDLE data));
+	void (*destructor)(bd_thread_t thread);
+	BD_HANDLE (*run)(BD_HANDLE data);
+
+	BD_INT (*join)(bd_thread_t thread);
+	BD_INT (*detach)(bd_thread_t thread);
+	BD_INT (*start)(bd_thread_t thread, BD_HANDLE data);
+
+};
+
+bd_thread_t bd_thread_create(BD_HANDLE (*run)(BD_HANDLE data), BD_HANDLE data);
 
 void bd_thread_destroy(bd_thread_t thread);
-
-void bd_thread_join(bd_thread_t thread);
-
-void bd_thread_detach(bd_thread_t thread);
 
 #endif /* INCLUDE_SYSTEM_THREAD_H_ */

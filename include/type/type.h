@@ -33,6 +33,7 @@
 #define BD_STRING	const char*
 #define BD_CHAR		char
 #define BD_LONGINT	long int
+#define BD_ULONGINT unsigned long int
 
 #define BD_SIZE		size_t
 
