@@ -20,11 +20,14 @@
 #include "type/object.h"
 #include "system/timer.h"
 
+
 void bd_timer_constructor(bd_timer_t self, BD_INT id, BD_ULONG milliseconds)
 {
 	if (self == BD_NULL) {
 		return;
 	}
+	bd_source_t source = BD_SUP(self, bd_source);
+	source->constructor(source, BD_SOURCE_TIMER);
 	self->timeout = milliseconds;
 	self->id = id;
 }
