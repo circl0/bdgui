@@ -72,6 +72,7 @@ BD_INT bd_fb_dev_open(bd_fb_dev_t dev)
         return -1;
     }
 
+#ifdef HAVE_DOUBLE_BUFFER
     dev->vinfo.xres_virtual = dev->vinfo.xres;
     dev->vinfo.yres_virtual = 2 * dev->vinfo.yres;
     dev->vinfo.xoffset = 0;
@@ -100,15 +101,50 @@ BD_INT bd_fb_dev_open(bd_fb_dev_t dev)
     memset(dev->primary_buffer, 0, 2 * screen_size);
 
     return 0;
+
+#else
+
+    dev->width = dev->vinfo.xres;
+    dev->height = dev->vinfo.yres;
+
+    BD_UINT screen_size = dev->width * dev->height * dev->vinfo.bits_per_pixel / 8;
+    bd_log(FB_TAG, "screen_size: %d bits_per_pixel:%d\n", screen_size, dev->vinfo.bits_per_pixel);
+    bd_log(FB_TAG, "red: %d green: %d blue: %d\n", screen_size, dev->vinfo.red.offset, dev->vinfo.green.offset, dev->vinfo.blue.offset);
+    bd_log(FB_TAG, "3\n");
+    dev->primary_buffer = mmap(0, screen_size, PROT_READ | PROT_WRITE, MAP_SHARED,
+                       dev->fp, 0);
+    bd_log(FB_TAG, "2\n");
+    if ((BD_INT)dev->primary_buffer == -1) {
+    	bd_log(FB_TAG, "Error: failed to map framebuffer device to memory.\n");
+        return -1;
+    }
+    dev->back_buffer = bd_malloc(screen_size);
+    dev->screen_size = screen_size;
+
+    memset(dev->primary_buffer, 0, screen_size);
+    memset(dev->back_buffer, 0, screen_size);
+    bd_log(FB_TAG, "1\n");
+    return 0;
+
+#endif
 }
 
 BD_INT bd_fb_dev_close(bd_fb_dev_t dev)
 {
+#ifdef HAVE_DOUBLE_BUFFER
 	void* buffer = dev->primary_buffer < dev->back_buffer ? dev->primary_buffer : dev->back_buffer;
-    if (munmap(buffer, 2 * dev->screen_size) < 0) {
+
+	if (munmap(buffer, 2 * dev->screen_size) < 0) {
     	bd_log(FB_TAG, "Error munmap.\n");
     	return -1;
     }
+#else
+	if (munmap(dev->primary_buffer, dev->screen_size) < 0) {
+    	bd_log(FB_TAG, "Error munmap.\n");
+    	return -1;
+    }
+	bd_free(dev->back_buffer);
+#endif
     if (close(dev->fp) < 0) {
     	bd_log(FB_TAG, "Error close.\n");
     	return -1;
@@ -119,13 +155,15 @@ BD_INT bd_fb_dev_close(bd_fb_dev_t dev)
 void bd_fb_dev_paint_pixel(bd_fb_dev_t dev, BD_UINT x, BD_UINT y,
 							BD_UINT r, BD_UINT g, BD_UINT b)
 {
+	BD_UINT32 rgb888 = (r << 16) + (g << 8) + b;
     BD_ULONG location = (x + y * dev->width) * (dev->vinfo.bits_per_pixel / 8);
 
-    *((BD_UINT16*)(dev->back_buffer + location)) = (g|0x08 << 11) | (b|0x08 << 6) | r|0x08;
+    *((BD_UINT16*)(dev->back_buffer + location)) = ((((rgb888) >> 19) & 0x1f) << 11) | ((((rgb888) >> 10) & 0x3f) << 5) |(((rgb888) >> 3) & 0x1f);
 }
 
 void bd_fb_dev_flip(bd_fb_dev_t dev)
 {
+#ifdef HAVE_DOUBLE_BUFFER
 	void* temp = dev->primary_buffer;
 	dev->primary_buffer = dev->back_buffer;
 	dev->back_buffer = temp;
@@ -136,4 +174,9 @@ void bd_fb_dev_flip(bd_fb_dev_t dev)
     }
 	dev->vinfo.yoffset = (dev->vinfo.yoffset == 0 ? dev->height : 0);
 	ioctl(dev->fp, FBIOPAN_DISPLAY, &dev->vinfo);
+#else
+	bd_log(FB_TAG, "7\n");
+	memcpy(dev->primary_buffer, dev->back_buffer, dev->screen_size);
+	bd_log(FB_TAG, "5\n");
+#endif
 }

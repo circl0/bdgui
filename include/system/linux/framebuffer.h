@@ -23,6 +23,8 @@
 #include <linux/fb.h>
 #include "type/type.h"
 
+//#define HAVE_DOUBLE_BUFFER  1
+
 typedef struct bd_fb_dev {
     struct fb_var_screeninfo vinfo;
     struct fb_fix_screeninfo finfo;
