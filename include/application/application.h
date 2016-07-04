@@ -20,24 +20,24 @@
 #ifndef INCLUDE_EVENT_APPLICATION_H_
 #define INCLUDE_EVENT_APPLICATION_H_
 
-#include "type/list.h"
+#include "application/windows_manager.h"
 #include "system/thread.h"
 #include "event/queue.h"
 #include "component/window.h"
 #include "type/object.h"
-
-typedef bd_list_t bd_window_list_t;
 
 BD_CLASS(bd_application) {
 	BD_EXTENDS(bd_object);
 
 	bd_thread_t thread;
 	bd_event_queue_t event_queue;
-	bd_window_list_t window_list;
+	bd_windows_manager_t windows_mananger;
+
+	void (*constructor)(bd_application_t app);
+	void (*destructor)(bd_application_t app);
+
+	void (*run)(bd_application_t app, bd_window_t main_window);
+	void (*send_event)(bd_application_t app, bd_event_t event);
 };
-
-void bd_application_run(bd_window_t main_window);
-
-void bd_application_send_event(bd_event_t event);
 
 #endif 

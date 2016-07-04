@@ -26,8 +26,8 @@ typedef struct bd_window bd_window, *bd_window_t;
 
 BD_CLASS(bd_window) {
 	BD_EXTENDS(bd_component);
-
-	void(*handle_message)(bd_window_t window, bd_event_t event);
+	void(*render)(bd_window_t window);
+	void(*handle_event)(bd_window_t window, bd_event_t event);
 };
 
 

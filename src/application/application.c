@@ -16,22 +16,7 @@
  *
 */
 
-#include "system/system.h"
-#include "event/application.h"
-#include "type/type.h"
-
-static bd_application_t app = BD_NULL;
-
-static BD_INT bd_application_event_queue_map_func(BD_HANDLE e, BD_INT location, BD_HANDLE data)
-{
-	bd_window_t window = (bd_window_t) e;
-	bd_event_t event = (bd_event_t) data;
-	if (window == BD_NULL || event == BD_NULL) {
-		return 0;
-	}
-	window->handle_message(window, event);
-	return 1;
-}
+#include "application/application.h"
 
 static BD_HANDLE bd_application_run_func(BD_HANDLE data)
 {
@@ -41,32 +26,54 @@ static BD_HANDLE bd_application_run_func(BD_HANDLE data)
 	}
 	while (1) {
 		bd_event_t event = bd_event_queue_get(app->event_queue);
-		if (event != BD_NULL) {
-			bd_list_for_each(app->window_list, bd_application_event_queue_map_func, event);
-		}
+		app->windows_mananger->handler_event(app->windows_mananger, event);
 		bd_free(event);
 	}
 	return BD_NULL;
 }
 
-void bd_application_run(bd_window_t main_window)
+void bd_application_constructor(bd_application_t app)
 {
-	app = (bd_application_t) bd_malloc(sizeof(bd_application));
 	if (app == BD_NULL) {
 		return;
 	}
-//	app->clazz->type = BD_TYPE_APPLICATION;
-	app->event_queue = bd_event_queue_create();
-	app->window_list = bd_list_create();
-	bd_list_push(app->window_list, main_window);
+	app->windows_mananger = bd_windows_manager_create();
 	app->thread = bd_thread_create(bd_application_run_func, app);
+	app->event_queue = bd_event_queue_create();
+}
+
+void bd_application_destructor(bd_application_t app)
+{
+	if (app == BD_NULL) {
+		return;
+	}
+	bd_event_queue_destroy(app->event_queue);
+	bd_thread_destroy(app->thread);
+	bd_windows_manager_destroy(app->windows_mananger);
+}
+
+void bd_application_run(bd_application_t app, bd_window_t main_window)
+{
+	if (app == BD_NULL) {
+		return;
+	}
+	app->windows_mananger->add(app->windows_mananger, main_window);
+	app->thread->start(app->thread, app);
 	bd_main_loop();
 }
 
-void bd_application_send_event(bd_event_t event)
+void bd_application_send_event(bd_application_t app, bd_event_t event)
 {
 	if (app == BD_NULL) {
 		return;
 	}
 	bd_event_queue_push(app->event_queue, event);
 }
+
+BD_CLASS_CONSTRUCTOR_START(bd_application)
+BD_SUPER_CONSTRUCTOR(bd_object)
+BD_CLASS_METHOD(constructor, bd_application_constructor)
+BD_CLASS_METHOD(destructor, bd_application_destructor)
+BD_CLASS_METHOD(run, bd_application_run)
+BD_CLASS_METHOD(send_event, bd_application_send_event)
+BD_CLASS_CONSTRUCTOR_END

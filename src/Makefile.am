@@ -1,7 +1,8 @@
 AUTOMAKE_OPTIONS = subdir-objects 
 noinst_LIBRARIES=libbdgui.a
 libbdgui_a_SOURCES= component/window.c \
-                    event/application.c \
+                    application/application.c \
+                    application/windows_manager.c \
                     event/base.c \
                     event/events.c \
                     event/map.c \

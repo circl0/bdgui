@@ -27,7 +27,6 @@
 #include "system/linux/input.h"
 #include "system/input.h"
 #include "type/object.h"
-#include "event/application.h"
 #include "utils/log.h"
 #include <stdlib.h>
 #include <pthread.h>

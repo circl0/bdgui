@@ -107,7 +107,8 @@ libbdgui_a_AR = $(AR) $(ARFLAGS)
 libbdgui_a_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libbdgui_a_OBJECTS = component/window.$(OBJEXT) \
-	event/application.$(OBJEXT) event/base.$(OBJEXT) \
+	application/application.$(OBJEXT) \
+	application/windows_manager.$(OBJEXT) event/base.$(OBJEXT) \
 	event/events.$(OBJEXT) event/map.$(OBJEXT) \
 	event/queue.$(OBJEXT) render/painter.$(OBJEXT) \
 	render/surface.$(OBJEXT) system/input.$(OBJEXT) \
@@ -269,7 +270,8 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = subdir-objects 
 noinst_LIBRARIES = libbdgui.a
 libbdgui_a_SOURCES = component/window.c \
-                    event/application.c \
+                    application/application.c \
+                    application/windows_manager.c \
                     event/base.c \
                     event/events.c \
                     event/map.c \
@@ -339,14 +341,22 @@ component/$(DEPDIR)/$(am__dirstamp):
 	@: > component/$(DEPDIR)/$(am__dirstamp)
 component/window.$(OBJEXT): component/$(am__dirstamp) \
 	component/$(DEPDIR)/$(am__dirstamp)
+application/$(am__dirstamp):
+	@$(MKDIR_P) application
+	@: > application/$(am__dirstamp)
+application/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) application/$(DEPDIR)
+	@: > application/$(DEPDIR)/$(am__dirstamp)
+application/application.$(OBJEXT): application/$(am__dirstamp) \
+	application/$(DEPDIR)/$(am__dirstamp)
+application/windows_manager.$(OBJEXT): application/$(am__dirstamp) \
+	application/$(DEPDIR)/$(am__dirstamp)
 event/$(am__dirstamp):
 	@$(MKDIR_P) event
 	@: > event/$(am__dirstamp)
 event/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) event/$(DEPDIR)
 	@: > event/$(DEPDIR)/$(am__dirstamp)
-event/application.$(OBJEXT): event/$(am__dirstamp) \
-	event/$(DEPDIR)/$(am__dirstamp)
 event/base.$(OBJEXT): event/$(am__dirstamp) \
 	event/$(DEPDIR)/$(am__dirstamp)
 event/events.$(OBJEXT): event/$(am__dirstamp) \
@@ -437,6 +447,7 @@ libbdgui.a: $(libbdgui_a_OBJECTS) $(libbdgui_a_DEPENDENCIES) $(EXTRA_libbdgui_a_
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f application/*.$(OBJEXT)
 	-rm -f component/*.$(OBJEXT)
 	-rm -f event/*.$(OBJEXT)
 	-rm -f render/*.$(OBJEXT)
@@ -449,8 +460,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@application/$(DEPDIR)/application.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@application/$(DEPDIR)/windows_manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@component/$(DEPDIR)/window.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@event/$(DEPDIR)/application.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@event/$(DEPDIR)/base.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@event/$(DEPDIR)/events.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@event/$(DEPDIR)/map.Po@am__quote@
@@ -603,6 +615,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f application/$(DEPDIR)/$(am__dirstamp)
+	-rm -f application/$(am__dirstamp)
 	-rm -f component/$(DEPDIR)/$(am__dirstamp)
 	-rm -f component/$(am__dirstamp)
 	-rm -f event/$(DEPDIR)/$(am__dirstamp)
@@ -628,7 +642,7 @@ clean: clean-am
 clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf component/$(DEPDIR) event/$(DEPDIR) render/$(DEPDIR) system/$(DEPDIR) system/linux/$(DEPDIR) type/$(DEPDIR) type/gdsl/$(DEPDIR) utils/$(DEPDIR)
+	-rm -rf application/$(DEPDIR) component/$(DEPDIR) event/$(DEPDIR) render/$(DEPDIR) system/$(DEPDIR) system/linux/$(DEPDIR) type/$(DEPDIR) type/gdsl/$(DEPDIR) utils/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -674,7 +688,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf component/$(DEPDIR) event/$(DEPDIR) render/$(DEPDIR) system/$(DEPDIR) system/linux/$(DEPDIR) type/$(DEPDIR) type/gdsl/$(DEPDIR) utils/$(DEPDIR)
+	-rm -rf application/$(DEPDIR) component/$(DEPDIR) event/$(DEPDIR) render/$(DEPDIR) system/$(DEPDIR) system/linux/$(DEPDIR) type/$(DEPDIR) type/gdsl/$(DEPDIR) utils/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

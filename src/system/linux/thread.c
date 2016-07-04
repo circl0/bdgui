@@ -27,7 +27,6 @@ bd_thread_t bd_thread_create(BD_HANDLE (*run)(BD_HANDLE data), BD_HANDLE data)
 {
 	bd_thread_t thread = bd_thread_new();
 	thread->constructor(thread, run);
-	thread->start(thread, data);
 	return thread;
 }
 
