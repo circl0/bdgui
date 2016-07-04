@@ -35,7 +35,7 @@ static void bd_linux_timer_fd_set_timeout(BD_INT fd, BD_ULONG milliseconds)
 	timerspec.it_value.tv_nsec = (milliseconds % 1000) * 1000 * 1000;
 	timerspec.it_interval.tv_sec = timerspec.it_value.tv_sec;
 	timerspec.it_interval.tv_nsec = timerspec.it_value.tv_nsec;
-	timerfd_settime(fd, CLOCK_MONOTONIC, 0, &timerspec);
+	timerfd_settime(fd, CLOCK_MONOTONIC, &timerspec, BD_NULL);
 }
 
 bd_timer_t bd_timer_create(BD_INT id, BD_ULONG timeout)
