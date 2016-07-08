@@ -22,10 +22,16 @@
 
 #include "type/object.h"
 
-typedef struct bd_component bd_component, *bd_component_t;
-
 BD_ABSTRACT_CLASS(bd_component) {
 	BD_EXTENDS(bd_object);
+
+	void (*constructor)(bd_component_t component);
+	void (*destructor)(bd_component_t component);
+
+	BD_INT x;
+	BD_INT y;
+	BD_INT width;
+	BD_INT height;
 
 	void (*render)(bd_component_t);
 };

@@ -18,33 +18,70 @@
 
 
 #include "render/surface.h"
+#include "render/painter.h"
 #include "system/system.h"
 #include "system/display.h"
 
 bd_surface_t bd_surface_create()
 {
-    bd_surface_t surface = (bd_surface_t)bd_malloc(sizeof(bd_surface));
-    if (surface == BD_NULL) {
-        return BD_NULL;
-    }
-    surface->height = bd_get_screen_height();
-    surface->width = bd_get_screen_width();
-    surface->buffer = bd_malloc(surface->height * surface->width * sizeof(BD_UINT));
-    return surface;
+	bd_surface_t surface = bd_surface_new();
+	surface->constructor(surface);
+	return surface;
 }
 
 void bd_surface_destroy(bd_surface_t surface)
 {
+	surface->destructor(surface);
+	bd_surface_delete(surface);
+}
+
+void bd_surface_constructor(bd_surface_t surface)
+{
     if (surface == BD_NULL) {
         return;
     }
-    if (surface->buffer != BD_NULL) {
-        bd_free(surface->buffer);
-    }
-    bd_free(surface);
+    surface->painter = bd_painter_create(surface);
+    surface->height = bd_get_screen_height();
+    surface->width = bd_get_screen_width();
 }
 
-void bd_surface_output(bd_surface_t surface)
+void bd_surface_destructor(bd_surface_t surface)
 {
-
+    if (surface == BD_NULL) {
+        return;
+    }
+	bd_painter_delete(surface->painter);
 }
+
+bd_painter_t bd_surface_get_painter(bd_surface_t surface)
+{
+    if (surface == BD_NULL) {
+        return BD_NULL;
+    }
+    return surface->painter;
+}
+
+BD_UINT bd_surface_get_width(bd_surface_t surface)
+{
+    if (surface == BD_NULL) {
+        return 0;
+    }
+    return surface->width;
+}
+
+BD_UINT bd_surface_get_height(bd_surface_t surface)
+{
+    if (surface == BD_NULL) {
+        return 0;
+    }
+    return surface->height;
+}
+
+BD_CLASS_CONSTRUCTOR_START(bd_surface)
+BD_SUPER_CONSTRUCTOR(bd_object)
+BD_CLASS_METHOD(constructor, bd_surface_constructor)
+BD_CLASS_METHOD(destructor, bd_surface_destructor)
+BD_CLASS_METHOD(get_painter, bd_surface_get_painter)
+BD_CLASS_METHOD(get_width, bd_surface_get_width)
+BD_CLASS_METHOD(get_height, bd_surface_get_height)
+BD_CLASS_CONSTRUCTOR_END

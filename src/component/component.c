@@ -18,7 +18,18 @@
 
 #include "component/base.h"
 
+void bd_component_constructor(bd_component_t component)
+{
+
+}
+
+void bd_component_destructor(bd_component_t component)
+{
+
+}
+
 BD_ABSTRACT_CLASS_CONSTRUCTOR_START(bd_component)
 BD_SUPER_CONSTRUCTOR(bd_object)
-
+BD_CLASS_METHOD(constructor, bd_component_constructor)
+BD_CLASS_METHOD(destructor, bd_component_destructor)
 BD_ABSTRACT_CLASS_CONSTRUCTOR_END

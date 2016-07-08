@@ -20,29 +20,36 @@
 #ifndef INCLUDE_RENDER_PAINTER_H_
 #define INCLUDE_RENDER_PAINTER_H_
 
-#include "render/surface.h"
 #include "type/type.h"
+#include "type/object.h"
 
-typedef struct bd_painter {
+BD_CLASS(bd_painter) {
+	BD_EXTENDS(bd_object);
 	//surface
-	bd_surface_t surface;
 	//context
 	bd_color line_color;
 	BD_UINT line_width;
 	bd_color fill_color;
+	bd_color font_color;
+	// con/des
+    void (*constructor)(bd_painter_t p);
+    void (*destructor)(bd_painter_t p);
+	// drawing method
+	void (*draw_line)(bd_painter_t p, BD_INT x1, BD_INT y1, BD_INT x2, BD_INT y2);
+	// getter/setter
+	void (*set_line_width)(bd_painter_t p, BD_UINT w);
+	BD_UINT (*get_line_width)(bd_painter_t p);
 
-} bd_painter;
+	void (*set_line_color)(bd_painter_t p, bd_color c);
+	bd_color (*get_line_color)(bd_painter_t p);
 
-typedef bd_painter* bd_painter_t;
+	void (*set_font_color)(bd_painter_t p, bd_color c);
+	bd_color (*get_font_color)(bd_painter_t p);
 
-bd_painter_t bd_painter_create_from_surface(bd_surface_t surface);
+};
+
+bd_painter_t bd_painter_create();
 void bd_painter_destroy(bd_painter_t p);
-//pixel
-void bd_painter_draw_pixel(bd_painter_t p, BD_INT x1, BD_INT y1, BD_INT x2, BD_INT y2);
-//line
-void bd_painter_draw_line(bd_painter_t p, BD_INT x1, BD_INT y1, BD_INT x2, BD_INT y2);
-void bd_painter_set_line_color(bd_painter_t p, bd_color c);
-void bd_painter_set_line_width(bd_painter_t p, BD_UINT w);
 
 
 #endif /* INCLUDE_RENDER_RENDERER_H_ */
