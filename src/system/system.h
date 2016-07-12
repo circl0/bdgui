@@ -17,30 +17,23 @@
 */
 
 
-#ifndef BD_LIST_H
-#define BD_LIST_H
+#ifndef BD_SYSTEM_H
+#define BD_SYSTEM_H
 
-#include "config.h"
 #include "type/type.h"
 
-//#ifdef WITH_GDSL
-#include <gdsl/gdsl_list.h>
-typedef gdsl_list_t bd_list_t;
-typedef gdsl_compare_func_t bd_compare_func;
-typedef gdsl_map_func_t bd_map_func;
-//#endif
+// memory
+BD_HANDLE bd_malloc(BD_INT size);
+void bd_free(BD_HANDLE handle);
 
+// tickcount
+BD_ULONG bd_get_tick_count();
 
-bd_list_t bd_list_create();
-void bd_list_destroy(bd_list_t list);
+// mutex
+void bd_lock();
+void bd_unlock();
 
-void bd_list_push(bd_list_t list, BD_HANDLE data);
-BD_HANDLE bd_list_get(bd_list_t list);
-
-BD_HANDLE bd_list_first(bd_list_t list);
-
-BD_HANDLE bd_list_remove(bd_list_t list, bd_compare_func func, BD_HANDLE value);
-void bd_list_for_each(bd_list_t list, bd_map_func func, BD_HANDLE data);
-BD_HANDLE bd_list_search(bd_list_t list, bd_compare_func func, BD_HANDLE value);
+// events
+void bd_main_loop();
 
 #endif

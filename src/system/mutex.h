@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  BDGUI Team
+　* Copyright (C) 2016  Allen Yuan
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,25 +16,20 @@
  *
 */
 
+#ifndef INCLUDE_SYSTEM_MUTEX_H_
+#define INCLUDE_SYSTEM_MUTEX_H_
 
-#ifndef BD_SYSTEM_H
-#define BD_SYSTEM_H
+//#ifdef WITH_LINUX
+#include <pthread.h>
+typedef pthread_mutex_t bd_mutex_t;
+//#endif
 
-#include "config.h"
 #include "type/type.h"
 
-// memory
-BD_HANDLE bd_malloc(BD_INT size);
-void bd_free(BD_HANDLE handle);
+bd_mutex_t bd_mutex_create();
+void bd_mutex_destroy(bd_mutex_t mutex);
 
-// tickcount
-BD_ULONG bd_get_tick_count();
+BD_INT bd_mutex_lock(bd_mutex_t mutex);
+BD_INT bd_mutex_unlock(bd_mutex_t mutex);
 
-// mutex
-void bd_lock();
-void bd_unlock();
-
-// events
-void bd_main_loop();
-
-#endif
+#endif 

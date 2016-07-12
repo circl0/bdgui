@@ -18,8 +18,6 @@
 
 #include "type/list.h"
 
-#ifdef WITH_GDSL
-
 #include "system/system.h"
 
 bd_list_t bd_list_create()
@@ -57,6 +55,3 @@ BD_HANDLE bd_list_remove(bd_list_t list, bd_compare_func func, BD_HANDLE value)
 {
 	return gdsl_list_delete(list, func, value);
 }
-
-#endif
-

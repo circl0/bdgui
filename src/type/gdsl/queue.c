@@ -18,8 +18,6 @@
 
 #include "type/queue.h"
 
-#ifdef WITH_GDSL
-
 #include "system/system.h"
 
 bd_queue_t bd_queue_create()
@@ -41,5 +39,3 @@ BD_HANDLE bd_queue_get(bd_queue_t queue)
 {
 	return gdsl_queue_remove(queue);
 }
-
-#endif

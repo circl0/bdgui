@@ -20,7 +20,6 @@
 #ifndef INCLUDE_SYSTEM_THREAD_H_
 #define INCLUDE_SYSTEM_THREAD_H_
 
-#include "config.h"
 #include "type/type.h"
 #include "type/object.h"
 

@@ -6,20 +6,18 @@ before_install:
   - sudo apt-get update 
 
 install:
-  - sudo apt-get install gcc-arm-linux-gnueabihf
+  - sudo apt-get install clang gcc-multilib libc6:i386 libgcc1:i386 gcc-4.6-base:i386 libstdc++5:i386 libstdc++6:i386 libsdl-dev
+  - sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
   - export CC=arm-linux-gnueabihf-gcc
-  - arm-linux-gnueabihf-gcc -v
   - git clone https://github.com/circl0/gdsl.git
   - cd gdsl
-  - ./configure --host=arm-linux-gnueabi --prefix=$PWD/../build
+  - ./configure --host=arm-linux-gnueabihf --disable-shared
   - make
-  - make install
+  - sudo make install
 
 script:
   - cd ..
-  - aclocal
-  - autoconf
-  - autoheader
-  - automake --add-missing
-  - ./configure --host=arm-bcm2708-linux-gnueabi CFLAGS=-I$PWD/build/include LDFLAGS=-L$PWD/include/lib
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain_arm-linux-gnueabihf.cmake ..
   - make

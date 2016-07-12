@@ -17,21 +17,27 @@
 */
 
 
-#ifndef INCLUDE_TYPE_QUEUE_H_
-#define INCLUDE_TYPE_QUEUE_H_
+#ifndef BD_LIST_H
+#define BD_LIST_H
 
-#include "config.h"
 #include "type/type.h"
 
-//#ifdef WITH_GDSL
-#include <gdsl/gdsl_queue.h>
-typedef gdsl_queue_t bd_queue_t;
-//#endif
+#include <gdsl/gdsl_list.h>
+typedef gdsl_list_t bd_list_t;
+typedef gdsl_compare_func_t bd_compare_func;
+typedef gdsl_map_func_t bd_map_func;
 
-bd_queue_t bd_queue_create();
-void bd_queue_destroy(bd_queue_t queue);
 
-void bd_queue_push(bd_queue_t queue, BD_HANDLE data);
-BD_HANDLE bd_queue_get(bd_queue_t queue);
+bd_list_t bd_list_create();
+void bd_list_destroy(bd_list_t list);
 
-#endif /* INCLUDE_TYPE_QUEUE_H_ */
+void bd_list_push(bd_list_t list, BD_HANDLE data);
+BD_HANDLE bd_list_get(bd_list_t list);
+
+BD_HANDLE bd_list_first(bd_list_t list);
+
+BD_HANDLE bd_list_remove(bd_list_t list, bd_compare_func func, BD_HANDLE value);
+void bd_list_for_each(bd_list_t list, bd_map_func func, BD_HANDLE data);
+BD_HANDLE bd_list_search(bd_list_t list, bd_compare_func func, BD_HANDLE value);
+
+#endif
