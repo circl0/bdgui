@@ -39,5 +39,6 @@ BD_HANDLE bd_list_first(bd_list_t list);
 BD_HANDLE bd_list_remove(bd_list_t list, bd_compare_func func, BD_HANDLE value);
 void bd_list_for_each(bd_list_t list, bd_map_func func, BD_HANDLE data);
 BD_HANDLE bd_list_search(bd_list_t list, bd_compare_func func, BD_HANDLE value);
-
+void bd_list_bring_to_first(bd_list_t list, bd_compare_func func, BD_HANDLE value);
+BD_INT bd_list_size(bd_list_t list);
 #endif

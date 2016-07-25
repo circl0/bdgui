@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  Allen Yuan
+　* Copyright (C) 2016  BDGUI Team
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -17,23 +17,25 @@
 */
 
 
-#ifndef BD_COMPONENT_H
-#define BD_COMPONENT_H
+#ifndef INCLUDE_RENDER_PAINTER_INTERNAL_CAIRO_REGION_H_
+#define INCLUDE_RENDER_PAINTER_INTERNAL_CAIRO_REGION_H_
 
+#include "render/region.h"
 #include "type/object.h"
+#include <cairo.h>
 
-BD_ABSTRACT_CLASS(bd_component) {
-	BD_EXTENDS(bd_object);
+BD_CLASS(bd_cairo_region) {
+	BD_IMPLEMENTS(bd_region);
+	
+	cairo_region_t* cr;
 
-	void (*constructor)(bd_component_t component);
-	void (*destructor)(bd_component_t component);
+	// con/des
+    void (*constructor)(bd_cairo_region_t cr, bd_rect_t rect);
+    void (*destructor)(bd_cairo_region_t cr);
 
-	BD_INT x;
-	BD_INT y;
-	BD_INT width;
-	BD_INT height;
-
-	void (*render)(bd_component_t);
 };
 
-#endif //BD_COMPONENT_H
+bd_cairo_region_t bd_cairo_region_create(bd_rect_t rect);
+void bd_cairo_region_destroy(bd_cairo_region_t cairo_region);
+
+#endif

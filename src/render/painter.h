@@ -22,34 +22,32 @@
 
 #include "type/type.h"
 #include "type/object.h"
-
-BD_CLASS(bd_painter) {
-	BD_EXTENDS(bd_object);
-	//surface
-	//context
-	bd_color line_color;
-	BD_UINT line_width;
-	bd_color fill_color;
-	bd_color font_color;
-	// con/des
-    void (*constructor)(bd_painter_t p);
-    void (*destructor)(bd_painter_t p);
+#include "font/font.h"
+#include "type/type.h"
+#include "render/region.h"
+ 
+BD_INTERFACE(bd_painter) {
+	
 	// drawing method
 	void (*draw_line)(bd_painter_t p, BD_INT x1, BD_INT y1, BD_INT x2, BD_INT y2);
+	void (*draw_text)(bd_painter_t p, BD_INT x1, BD_INT y1, const char* text);
+	void (*draw_rect)(bd_painter_t p, bd_rect_t rect);
+	void (*draw_circle)(bd_painter_t p, BD_INT x, BD_INT y, BD_INT r);
+
+	void (*fill)(bd_painter_t p);
+
+	void (*save)(bd_painter_t p);
+	void (*restore)(bd_painter_t p);
+
 	// getter/setter
 	void (*set_line_width)(bd_painter_t p, BD_UINT w);
-	BD_UINT (*get_line_width)(bd_painter_t p);
+	void (*set_color)(bd_painter_t p, bd_color c);
+	void (*set_font)(bd_painter_t p, const char* name);
+	void (*set_font_size)(bd_painter_t p, BD_INT size);
 
-	void (*set_line_color)(bd_painter_t p, bd_color c);
-	bd_color (*get_line_color)(bd_painter_t p);
-
-	void (*set_font_color)(bd_painter_t p, bd_color c);
-	bd_color (*get_font_color)(bd_painter_t p);
-
+	void (*clip)(bd_painter_t p, bd_region_t region);
+	void (*reset_clip)(bd_painter_t p);
 };
-
-bd_painter_t bd_painter_create();
-void bd_painter_destroy(bd_painter_t p);
 
 
 #endif /* INCLUDE_RENDER_RENDERER_H_ */

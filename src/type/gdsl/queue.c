@@ -39,3 +39,9 @@ BD_HANDLE bd_queue_get(bd_queue_t queue)
 {
 	return gdsl_queue_remove(queue);
 }
+
+BD_INT bd_queue_size(bd_queue_t queue)
+{
+	return gdsl_queue_get_size(queue);
+}
+	

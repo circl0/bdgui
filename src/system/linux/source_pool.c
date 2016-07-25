@@ -38,7 +38,7 @@ bd_source_pool_t bd_source_pool_create(BD_UINT size)
 	return BD_SUP(pool, bd_source_pool);
 }
 
-void bd_source_pool_destory(bd_source_pool_t pool)
+void bd_source_pool_destroy(bd_source_pool_t pool)
 {
 	if (pool == BD_NULL) {
 		return;
@@ -107,7 +107,7 @@ void bd_linux_source_pool_clear(bd_source_pool_t pool)
 	linux_pool->bd_source_pool.size = 0;
 }
 
-void bd_linux_source_pool_wait_for_events(bd_source_pool_t pool, bd_application_t app, void(*bd_source_pool_events_func)(bd_source_pool_t, bd_application_t))
+void bd_linux_source_pool_wait_for_events(bd_source_pool_t pool, void(*bd_source_pool_events_func)(bd_source_pool_t))
 {
 	bd_linux_source_pool_t linux_pool = BD_SUB(pool, bd_source_pool, bd_linux_source_pool);
 	if (linux_pool == BD_NULL) {
@@ -117,7 +117,7 @@ void bd_linux_source_pool_wait_for_events(bd_source_pool_t pool, bd_application_
 	BD_INT result = poll(linux_pool->fds, linux_pool->bd_source_pool.size, -1);
 
 	if ((result > 0) && bd_source_pool_events_func != BD_NULL) {
-		bd_source_pool_events_func(pool, app);
+		bd_source_pool_events_func(pool);
 	}
 
 	for (BD_INT i = 0; i < linux_pool->bd_source_pool.size; ++i) {
@@ -131,7 +131,7 @@ BD_INT bd_linux_source_pool_has_event(bd_source_pool_t pool, BD_UINT i)
 	if (linux_pool == BD_NULL || i >= linux_pool->bd_source_pool.size) {
 		return 0;
 	}
-	if (!(linux_pool->fds[i].revents)) {
+	if (!(linux_pool->fds[i].revents & POLLIN)) {
 		return 0;
 	}
 	return 1;

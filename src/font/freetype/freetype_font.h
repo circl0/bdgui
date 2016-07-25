@@ -16,28 +16,25 @@
  *
 */
 
+#ifndef INCLUDE_RENDER_FREETYPE_FONT_H_
+#define INCLUDE_RENDER_FREETYPE_FONT_H_
 
-#ifndef INCLUDE_EVENT_APPLICATION_H_
-#define INCLUDE_EVENT_APPLICATION_H_
-
-#include "application/windows_manager.h"
-#include "system/thread.h"
-#include "event/queue.h"
-#include "component/window.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include FT_GLYPH_H
+ 
 #include "type/object.h"
+#include "font/font.h"
 
-BD_CLASS(bd_application) {
-	BD_EXTENDS(bd_object);
+BD_CLASS(bd_freetype_font) {
+	BD_IMPLEMENTS(bd_font);
 
-	bd_thread_t thread;
-	bd_event_queue_t event_queue;
-	bd_windows_manager_t windows_mananger;
+	FT_Face face;
 
-	void (*constructor)(bd_application_t app);
-	void (*destructor)(bd_application_t app);
-
-	void (*run)(bd_application_t app, bd_window_t main_window);
-	void (*send_event)(bd_application_t app, bd_event_t event);
+	void (*constructor)(bd_freetype_font_t font, const char* name, FT_Library library);
+	void (*destructor)(bd_freetype_font_t font);
 };
+
+
 
 #endif 

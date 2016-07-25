@@ -31,4 +31,6 @@ void bd_queue_destroy(bd_queue_t queue);
 void bd_queue_push(bd_queue_t queue, BD_HANDLE data);
 BD_HANDLE bd_queue_get(bd_queue_t queue);
 
+BD_INT bd_queue_size(bd_queue_t queue);
+
 #endif /* INCLUDE_TYPE_QUEUE_H_ */

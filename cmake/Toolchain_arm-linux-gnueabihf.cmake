@@ -2,8 +2,8 @@
 SET(CMAKE_SYSTEM_NAME Linux)
 
 # specify the cross compiler
-SET(CMAKE_C_COMPILER   arm-linux-gnueabihf-gcc)
-SET(CMAKE_CXX_COMPILER   arm-linux-gnueabihf-g++)
+SET(CMAKE_C_COMPILER   gcc)
+SET(CMAKE_CXX_COMPILER   g++)
 
 # where is the target environment 
 SET(CMAKE_FIND_ROOT_PATH  ${SYSROOT})

@@ -22,10 +22,12 @@
 #include "type/queue.h"
 #include "event/base.h"
 #include "system/mutex.h"
+#include "system/cond.h"
 
 typedef struct bd_event_queue {
 	bd_queue_t queue;
 	bd_mutex_t mutex;
+	bd_cond_t cond;
 } bd_event_queue, *bd_event_queue_t;
 
 bd_event_queue_t bd_event_queue_create();

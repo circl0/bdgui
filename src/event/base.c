@@ -19,15 +19,14 @@
 #include "type/type.h"
 #include "system/system.h"
 #include "event/base.h"
-#include "event/map.h"
 #include "type/list.h"
 #include "type/object.h"
-
 
 void bd_event_constructor(bd_event_t self, bd_event_id id)
 {
 	self->id = id;
 	self->sender = BD_NULL;
+	self->finished = 0;
 }
 
 void bd_event_destructor(bd_event_t self)

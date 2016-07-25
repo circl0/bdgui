@@ -32,6 +32,7 @@
 #define BD_ULONG	unsigned long
 #define BD_STRING	const char*
 #define BD_CHAR		char
+#define BD_UCHAR	unsigned char
 #define BD_LONGINT	long int
 #define BD_ULONGINT unsigned long int
 
@@ -54,11 +55,24 @@ typedef enum bd_type {
 	BD_TYPE_DEV
 } bd_type;
 
+typedef enum bd_color_type {
+	BD_COLOR_INVALID = -1,
+	BD_COLOR_RGB565
+} bd_color_type;
+
 typedef struct bd_color {
 	BD_UINT r;
 	BD_UINT g;
 	BD_UINT b;
-} bd_color;
+	BD_UINT a;
+} bd_color, *bd_color_t;
+
+typedef struct bd_rect {
+	BD_INT x;
+	BD_INT y;
+	BD_INT width;
+	BD_INT height;
+} bd_rect, *bd_rect_t;
 
 
 

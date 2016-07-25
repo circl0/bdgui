@@ -40,7 +40,7 @@ bd_fb_dev_t bd_fb_dev_create()
 	return dev;
 }
 
-void bd_fb_dev_destory(bd_fb_dev_t dev)
+void bd_fb_dev_destroy(bd_fb_dev_t dev)
 {
 	if (dev == BD_NULL) {
 		return;
@@ -110,10 +110,8 @@ BD_INT bd_fb_dev_open(bd_fb_dev_t dev)
     BD_UINT screen_size = dev->width * dev->height * dev->vinfo.bits_per_pixel / 8;
     bd_log(FB_TAG, "screen_size: %d bits_per_pixel:%d\n", screen_size, dev->vinfo.bits_per_pixel);
     bd_log(FB_TAG, "red: %d green: %d blue: %d\n", screen_size, dev->vinfo.red.offset, dev->vinfo.green.offset, dev->vinfo.blue.offset);
-    bd_log(FB_TAG, "3\n");
     dev->primary_buffer = mmap(0, screen_size, PROT_READ | PROT_WRITE, MAP_SHARED,
                        dev->fp, 0);
-    bd_log(FB_TAG, "2\n");
     if ((BD_INT)dev->primary_buffer == -1) {
     	bd_log(FB_TAG, "Error: failed to map framebuffer device to memory.\n");
         return -1;
@@ -123,7 +121,7 @@ BD_INT bd_fb_dev_open(bd_fb_dev_t dev)
 
     memset(dev->primary_buffer, 0, screen_size);
     memset(dev->back_buffer, 0, screen_size);
-    bd_log(FB_TAG, "1\n");
+
     return 0;
 
 #endif
@@ -175,8 +173,6 @@ void bd_fb_dev_flip(bd_fb_dev_t dev)
 	dev->vinfo.yoffset = (dev->vinfo.yoffset == 0 ? dev->height : 0);
 	ioctl(dev->fp, FBIOPAN_DISPLAY, &dev->vinfo);
 #else
-	bd_log(FB_TAG, "7\n");
 	memcpy(dev->primary_buffer, dev->back_buffer, dev->screen_size);
-	bd_log(FB_TAG, "5\n");
 #endif
 }

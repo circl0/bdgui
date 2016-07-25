@@ -21,25 +21,24 @@
 
 //#ifdef WITH_LINUX
 
-bd_mutex_t bd_mutex_create()
+void bd_mutex_init(bd_mutex_t* mutex)
 {
-	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-	return mutex;
+	pthread_mutex_init(mutex, NULL);
 }
 
-void bd_mutex_destroy(bd_mutex_t mutex)
+void bd_mutex_destroy(bd_mutex_t* mutex)
 {
-	pthread_mutex_destroy(&mutex);
+	pthread_mutex_destroy(mutex);
 }
 
-BD_INT bd_mutex_lock(bd_mutex_t mutex)
+BD_INT bd_mutex_lock(bd_mutex_t* mutex)
 {
-	return pthread_mutex_lock(&mutex);
+	return pthread_mutex_lock(mutex);
 }
 
-BD_INT bd_mutex_unlock(bd_mutex_t mutex)
+BD_INT bd_mutex_unlock(bd_mutex_t* mutex)
 {
-	return pthread_mutex_unlock(&mutex);
+	return pthread_mutex_unlock(mutex);
 }
 
 

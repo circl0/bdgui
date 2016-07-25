@@ -21,15 +21,34 @@
 #define INCLUDE_SYSTEM_DISPLAY_H_
 
 #include "type/type.h"
+#include "type/object.h"
+#include "system/mutex.h"
 
-BD_INT bd_open_display();
-BD_INT bd_close_display();
-BD_UINT bd_get_screen_width();
-BD_UINT bd_get_screen_height();
+BD_ABSTRACT_CLASS(bd_display) {
+	BD_EXTENDS(bd_object);
 
-void bd_paint_start();
-void bd_paint_finish();
-void bd_paint_pixel(BD_UINT x, BD_UINT y,
-		bd_color c);
+	BD_UINT screen_width;
+	BD_UINT screen_height;
+	bd_color_type color_type;
+	bd_mutex_t mutex;
+
+	void (*constructor)(bd_display_t display);
+	void (*destructor)(bd_display_t display);
+
+	BD_UINT (*get_screen_width)(bd_display_t display);
+	BD_UINT (*get_screen_height)(bd_display_t display);
+	bd_color_type (*get_color_type)(bd_display_t display);
+
+	BD_INT (*open)(bd_display_t display);
+	BD_INT (*close)(bd_display_t display);
+	void (*lock)(bd_display_t display);
+	void (*unlock)(bd_display_t display);
+	void (*flip)(bd_display_t display);
+	BD_HANDLE (*get_buffer)(bd_display_t display);
+};
+
+bd_display_t bd_display_create();
+void bd_display_destroy(bd_display_t display);
+
 
 #endif /* INCLUDE_SYSTEM_DISPLAY_H_ */

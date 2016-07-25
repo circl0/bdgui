@@ -37,18 +37,22 @@ t.close()
 
 # ssh into mini2440-qemu and run the program
 # print stdout stream from the program
-client = paramiko.SSHClient()
-client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-client.connect(setting["hostname"], port=setting["port"], username=setting["username"], password=setting["password"])
+# client = paramiko.SSHClient()
+# client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+# client.connect(setting["hostname"], port=setting["port"], username=setting["username"], password=setting["password"])
 
-try:
-    stdin, stdout, stderr = client.exec_command("chmod +x %s" % target_path)
-    stdin, stdout, stderr = client.exec_command(target_path)
-    for line in stdout:
-        sys.stdout.write(line)
-        sys.stdout.flush()
-except:
-    pass
-finally:
-    client.close()
+# try:
+#     stdin, stdout, stderr = client.exec_command("chmod +x %s" % target_path)
+#     stdin, stdout, stderr = client.exec_command(target_path)
+#     for line in stdout:
+#         sys.stdout.write(line)
+#         sys.stdout.flush()
+
+#     for line in stderr:
+#         sys.stdout.write(line)
+#         sys.stdout.flush()
+# except:
+#     pass
+# finally:
+#     client.close()
 

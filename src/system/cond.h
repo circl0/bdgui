@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  BDGUI Team
+　* Copyright (C) 2016  Allen Yuan
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,17 +16,21 @@
  *
 */
 
+#ifndef INCLUDE_SYSTEM_COND_H_
+#define INCLUDE_SYSTEM_COND_H_
 
-#ifndef INCLUDE_EVENT_MAP_H_
-#define INCLUDE_EVENT_MAP_H_
+// #ifdef WITH_LINUX
+#include <pthread.h>
+typedef pthread_cond_t bd_cond_t;
+// #endif
 
+#include "type/type.h"
+#include "system/mutex.h"
 
-#include "event/base.h"
-#include "type/list.h"
+void bd_cond_init(bd_cond_t* cond);
+void bd_cond_destroy(bd_cond_t* cond);
 
-void bd_register_message_handler(bd_event_id id, bd_object_t object, bd_event_handler_t handler);
-void bd_unregister_message_handler(bd_event_id id, bd_object_t object, bd_event_handler_t handler);
+BD_INT bd_cond_wait(bd_cond_t* cond, bd_mutex_t* mutex);
+BD_INT bd_cond_signal(bd_cond_t* cond);
 
-bd_list_t bd_get_message_handlers(bd_event_id id, bd_object_t object);
-
-#endif /* INCLUDE_EVENT_MAP_H_ */
+#endif 

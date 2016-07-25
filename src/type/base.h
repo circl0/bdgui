@@ -27,6 +27,8 @@
 #ifndef LW_OOPC_H_INCLUDED_
 #define LW_OOPC_H_INCLUDED_
 
+#include <stdlib.h>
+
 // ���ú�(��������ѡ��һ):
 // LW_OOPC_USE_STDDEF_OFFSETOF          ��ʾʹ��C��׼�����offsetof
 // LW_OOPC_USE_USER_DEFINED_OFFSETOF    ��ʾʹ���û��Զ����lw_oopc_offsetof��
@@ -35,8 +37,6 @@
 
 // �Ƿ�֧���ڴ�й¶��⣬ȱʡ��֧��
 //#define LW_OOPC_SUPPORT_MEMORY_LEAK_DETECTOR
-
-#include "system/system.h"
 
 typedef int lw_oopc_bool;
 #define lw_oopc_true	1
@@ -68,7 +68,7 @@ void lw_oopc_report();
 
 #define lw_oopc_file_line
 #define lw_oopc_file_line_params
-#define lw_oopc_free bd_free
+#define lw_oopc_free free
 #define lw_oopc_delete lw_oopc_free
 
 #endif
@@ -112,7 +112,7 @@ void type##_ctor(type* cthis) {
 #define CTOR(type)                                      \
     type* type##_new() {                                \
     struct type *cthis;                                 \
-    cthis = (struct type*)bd_malloc(sizeof(struct type));  \
+    cthis = (struct type*)malloc(sizeof(struct type));  \
     if(!cthis)                                          \
     {                                                   \
         return 0;                                       \

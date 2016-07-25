@@ -19,16 +19,33 @@
 #ifndef INCLUDE_COMPONENT_WINDOW_H_
 #define INCLUDE_COMPONENT_WINDOW_H_
 
-#include "component/base.h"
+#include "component/component.h"
 #include "event/base.h"
+#include "event/queue.h"
+#include "system/thread.h"
+#include "render/region.h"
 
 BD_CLASS(bd_window) {
 	BD_EXTENDS(bd_component);
 
+	bd_thread_t thread;
+	bd_event_queue_t event_queue;
+
+	bd_region_t clip_region;
+
+	BD_INT is_selected;
+
+	char* title;
+
 	void(*handle_event)(bd_window_t window, bd_event_t event);
+	void(*send_event)(bd_window_t window, bd_event_t event);
 
 	void(*constructor)(bd_window_t window);
 	void(*destructor)(bd_window_t window);
+
+	void (*set_title)(bd_window_t window, const char* title);
+
+	void (*update_clip_region)(bd_window_t window);
 };
 
 

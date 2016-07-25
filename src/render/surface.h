@@ -24,24 +24,16 @@
 #include "type/object.h"
 #include "render/painter.h"
 
-BD_CLASS(bd_surface) {
-	EXTENDS(bd_object);
-
-	bd_painter_t painter;
-
-    BD_UINT width;
-    BD_UINT height;
-
-    void (*constructor)(bd_surface_t surface);
-    void (*destructor)(bd_surface_t surface);
+BD_INTERFACE(bd_surface) {
 
     bd_painter_t (*get_painter)(bd_surface_t surface);
     BD_UINT (*get_width)(bd_surface_t surface);
     BD_UINT (*get_height)(bd_surface_t surface);
 
-};
+    void (*lock)(bd_surface_t surface);
+    void (*unlock)(bd_surface_t surface);
+    void (*flip)(bd_surface_t surface);
 
-bd_surface_t bd_surface_create();
-void bd_surface_destroy(bd_surface_t surface);
+};
 
 #endif //BDGUI_SURFACE_H

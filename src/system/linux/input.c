@@ -31,31 +31,80 @@
 
 #define INPUT_TAG "input"
 
-static void bd_linux_input_dev_get_mouse_event(bd_linux_input_t input, bd_mouse_event_t event)
+static BD_INT current_x = 0;
+static BD_INT current_y = 0;
+
+static bd_event_t bd_linux_input_dev_get_mouse_event(bd_linux_input_t input)
 {
 	struct input_event current_event;
 	memset(&current_event, 0, sizeof(struct input_event));
 	read(input->fd, &current_event, sizeof(struct input_event));
-	if (input == BD_NULL || event == BD_NULL) {
-		return;
+	if (input == BD_NULL) {
+		return BD_NULL;
 	}
 	bd_log("input", "name: %s, type: %d, code: %d, value: %d\n", input->bd_input.name, current_event.type, current_event.code, current_event.value);
+	if (current_event.type == 3) {
+		bd_mouse_move_event_t mouse_move_event = bd_mouse_move_event_new();
+		mouse_move_event->constructor(mouse_move_event);
+		if (current_event.code == 0) {
+			current_x = current_event.value / 128;
+		}
+		else if (current_event.code == 1) {
+			current_y = current_event.value / 128;
+		}
+		mouse_move_event->x = current_x;
+		mouse_move_event->y = current_y;
+
+		return BD_SUP(mouse_move_event, bd_event);
+	} 
+	else if (current_event.type == 1) {
+		bd_mouse_button_event_t mouse_button_event = bd_mouse_button_event_new();
+		mouse_button_event->constructor(mouse_button_event);
+		if (current_event.code == BTN_LEFT) {
+			mouse_button_event->button = BD_MOUSE_BUTTON_LEFT;
+		}
+		else if (current_event.code == BTN_RIGHT) {
+			mouse_button_event->button = BD_MOUSE_BUTTON_RIGHT;
+		}
+		else if (current_event.code == BTN_MIDDLE) {
+			mouse_button_event->button = BD_MOUSE_BUTTON_WHEEL;
+		}
+
+		if (current_event.value == 1) {
+			mouse_button_event->action = BD_MOUSE_BUTTON_DOWN;
+		}
+		else if (current_event.value == 0) {
+			mouse_button_event->action = BD_MOUSE_BUTTON_UP;
+		}
+
+		mouse_button_event->x = current_x;
+		mouse_button_event->y = current_y;
+		return BD_SUP(mouse_button_event, bd_event);
+	}
+	else {
+		return BD_NULL;
+	}
 }
 
-static void bd_linux_input_dev_get_keyboard_event(bd_linux_input_t input, bd_keyboard_event_t event)
+static bd_event_t bd_linux_input_dev_get_keyboard_event(bd_linux_input_t input)
 {
 	struct input_event current_event;
 	memset(&current_event, 0, sizeof(struct input_event));
 	read(input->fd, &current_event, sizeof(struct input_event));
-	if (input == BD_NULL || event == BD_NULL) {
-		return;
+	if (input == BD_NULL) {
+		return BD_NULL;
 	}
 	bd_log("input", "name: %s, type: %d, code: %d, value: %d\n", input->bd_input.name, current_event.type, current_event.code, current_event.value);
+
+	bd_keyboard_event_t keyboard_event = bd_keyboard_event_new();
+	keyboard_event->constructor(keyboard_event);
+
+	return BD_SUP(keyboard_event, bd_event);
 }
 
-static void bd_linux_input_dev_get_touch_event(bd_linux_input_t input, bd_touch_event_t event)
+static bd_event_t bd_linux_input_dev_get_touch_event(bd_linux_input_t input)
 {
-
+	return BD_NULL;
 }
 
 bd_input_t bd_input_create(const char* name, bd_input_type type)
@@ -124,31 +173,27 @@ bd_event_t bd_linux_input_dev_read_event(bd_input_t input)
 		return BD_NULL;
 	}
 	bd_linux_input_t linux_input = BD_SUB(input, bd_input, bd_linux_input);
+	bd_event_t event = BD_NULL;
 	switch(input->type) {
 	case BD_INPUT_MOUSE:
 	{
-		bd_mouse_event_t mouse_event = bd_mouse_event_new();
-		mouse_event->constructor(mouse_event);
-		bd_linux_input_dev_get_mouse_event(linux_input, mouse_event);
-		return BD_SUP(mouse_event, bd_event);
+		event = bd_linux_input_dev_get_mouse_event(linux_input);
+		break;
 	}
 	case BD_INPUT_TOUCH:
 	{
-		bd_touch_event_t touch_event = bd_touch_event_new();
-		touch_event->constructor(touch_event);
-		bd_linux_input_dev_get_touch_event(linux_input, touch_event);
-		return BD_SUP(touch_event, bd_event);
+		event = bd_linux_input_dev_get_touch_event(linux_input);
+		break;
 	}
 	case BD_INPUT_KEYBOARD:
 	{
-		bd_keyboard_event_t keyboard_event = bd_keyboard_event_new();
-		keyboard_event->constructor(keyboard_event);
-		bd_linux_input_dev_get_keyboard_event(linux_input, keyboard_event);
-		return BD_SUP(keyboard_event, bd_event);
+		event = bd_linux_input_dev_get_keyboard_event(linux_input);
+		break;
 	}
 	default:
-		return BD_NULL;
+		break;
 	}
+	return event;
 }
 
 BD_CLASS_CONSTRUCTOR_START(bd_linux_input)

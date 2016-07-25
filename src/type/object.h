@@ -23,7 +23,6 @@
 #include "type/type.h"
 #include "type/base.h"
 #include <stdarg.h>
-#include "system/system.h"
 
 
 #define BD_CLASS 								CLASS
@@ -53,8 +52,6 @@
 #define BD_CLASS_DESTRUCTOR(class)				\
 	BD_CLASS_DESTRUCTOR_START(class) \
 	cthis->destructor(cthis); \
-	bd_free(cthis); \
-	cthis = BD_NULL; \
 	return 1;\
 	BD_CLASS_CONSTRUCTOR_END
 

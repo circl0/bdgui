@@ -87,6 +87,10 @@ BD_INT bd_linux_timer_stop(bd_timer_t self)
 
 bd_event_t bd_linux_timer_read_event(bd_timer_t self)
 {
+	// bd_log("timer", "id: %d\n", self->id);
+	uint64_t exp = 0;
+	bd_linux_timer_t linux_timer = BD_SUB(self, bd_timer, bd_linux_timer);
+	read(linux_timer->fd, &exp, sizeof(uint64_t));
 	bd_timer_event_t event = bd_timer_event_new();
 	event->constructor(event);
 	event->timer = self;

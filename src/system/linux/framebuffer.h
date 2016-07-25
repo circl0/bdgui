@@ -39,7 +39,7 @@ typedef struct bd_fb_dev {
 typedef bd_fb_dev* bd_fb_dev_t;
 
 bd_fb_dev_t bd_fb_dev_create();
-void bd_fb_dev_destory(bd_fb_dev_t dev);
+void bd_fb_dev_destroy(bd_fb_dev_t dev);
 
 BD_INT bd_fb_dev_open(bd_fb_dev_t dev);
 BD_INT bd_fb_dev_close(bd_fb_dev_t dev);

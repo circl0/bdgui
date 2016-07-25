@@ -21,7 +21,8 @@
 
 #include "type/object.h"
 #include "system/source.h"
-#include "application/application.h"
+
+#define BD_SOURCE_POOL_MAX 255
 
 BD_ABSTRACT_CLASS(bd_source_pool) {
 	BD_EXTENDS(bd_object);
@@ -35,7 +36,7 @@ BD_ABSTRACT_CLASS(bd_source_pool) {
 
 	void(*push)(bd_source_pool_t pool, bd_source_t source);
 	void(*clear)(bd_source_pool_t pool);
-	void(*wait_for_events)(bd_source_pool_t pool, bd_application_t app, void(*bd_source_pool_events_func)(bd_source_pool_t, bd_application_t));
+	void(*wait_for_events)(bd_source_pool_t pool, void(*bd_source_pool_events_func)(bd_source_pool_t));
 	BD_INT (*has_event)(bd_source_pool_t pool, BD_UINT i);
 
 	BD_UINT (*get_size)(bd_source_pool_t pool);
@@ -44,6 +45,6 @@ BD_ABSTRACT_CLASS(bd_source_pool) {
 };
 
 bd_source_pool_t bd_source_pool_create(BD_UINT size);
-void bd_source_pool_destory(bd_source_pool_t pool);
+void bd_source_pool_destroy(bd_source_pool_t pool);
 
 #endif 

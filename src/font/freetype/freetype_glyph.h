@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  BDGUI Team
+　* Copyright (C) 2016  Allen Yuan
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,16 +16,31 @@
  *
 */
 
+#ifndef INCLUDE_RENDER_FREETYPE_GLYPH_H_
+#define INCLUDE_RENDER_FREETYPE_GLYPH_H_
 
-#ifndef INCLUDE_EVENT_SYSTEM_H_
-#define INCLUDE_EVENT_SYSTEM_H_
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include FT_GLYPH_H
 
-#include "event/base.h"
 #include "type/object.h"
+#include "font/glyph.h"
 
-typedef struct bd_system_event_handler {
-	bd_object base;
+BD_CLASS(bd_freetype_glyph) {
+  BD_IMPLEMENTS(bd_glyph);
+  
+  FT_Glyph glyph;
+  BD_INT pen_x;
+  BD_INT pen_y;
+  BD_INT advance_x;
+  BD_INT advance_y;
+
+  void (*constructor)(bd_freetype_glyph_t glyph);
+  void (*destructor)(bd_freetype_glyph_t glyph);
+
 };
 
 
-#endif /* INCLUDE_EVENT_SYSTEM_H_ */
+
+
+#endif 

@@ -21,19 +21,34 @@
 #define BD_SYSTEM_H
 
 #include "type/type.h"
+#include "type/object.h"
+#include "system/display.h"
+#include "system/input.h"
+#include "system/mutex.h"
+#include "system/source.h"
+#include "system/source_pool.h"
+#include "system/thread.h"
+#include "system/timer.h"
 
 // memory
 BD_HANDLE bd_malloc(BD_INT size);
 void bd_free(BD_HANDLE handle);
 
-// tickcount
-BD_ULONG bd_get_tick_count();
+BD_INTERFACE(bd_system_service) {
 
-// mutex
-void bd_lock();
-void bd_unlock();
+	void (*init)(bd_system_service_t service);
+	void (*deinit)(bd_system_service_t service);
+	void (*run)(bd_system_service_t service);
 
-// events
-void bd_main_loop();
+	bd_timer_t (*create_timer)(bd_system_service_t service, BD_INT id, BD_ULONG timeout);
+	void (*destroy_timer)(bd_system_service_t service, bd_timer_t timer);
+	void (*register_input)(bd_system_service_t service, const char* name, bd_input_type type);
+	BD_ULONG (*get_tick_count)(bd_system_service_t service);
+
+	bd_display_t (*get_display)(bd_system_service_t service);
+};
+
+bd_system_service_t bd_system_service_get();
+void bd_system_service_destroy();
 
 #endif

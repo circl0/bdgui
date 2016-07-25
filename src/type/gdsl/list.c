@@ -55,3 +55,14 @@ BD_HANDLE bd_list_remove(bd_list_t list, bd_compare_func func, BD_HANDLE value)
 {
 	return gdsl_list_delete(list, func, value);
 }
+
+BD_INT bd_list_size(bd_list_t list)
+{
+	return gdsl_list_get_size(list);
+}
+
+void bd_list_bring_to_first(bd_list_t list, bd_compare_func func, BD_HANDLE value)
+{
+	BD_HANDLE p = gdsl_list_remove(list, func, value);
+	gdsl_list_insert_head(list, p);
+}
