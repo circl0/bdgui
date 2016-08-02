@@ -19,18 +19,24 @@
 #ifndef INCLUDE_SYSTEM_COND_H_
 #define INCLUDE_SYSTEM_COND_H_
 
-// #ifdef WITH_LINUX
-#include <pthread.h>
-typedef pthread_cond_t bd_cond_t;
-// #endif
-
-#include "type/type.h"
+#include "type/object.h"
 #include "system/mutex.h"
+#include "system/linux/cond.h"
 
-void bd_cond_init(bd_cond_t* cond);
-void bd_cond_destroy(bd_cond_t* cond);
+BD_CLASS(bd_cond) {
+	BD_EXTENDS(bd_object);
 
-BD_INT bd_cond_wait(bd_cond_t* cond, bd_mutex_t* mutex);
-BD_INT bd_cond_signal(bd_cond_t* cond);
+	bd_cond_internal_t cond_internal;
+
+	void (*constructor)(bd_cond_t cond);
+	void (*destructor)(bd_cond_t cond);
+
+	BD_INT (*wait)(bd_cond_t cond, bd_mutex_t mutex);
+	BD_INT (*signal)(bd_cond_t cond);
+
+};
+
+bd_cond_t bd_cond_create();
+void bd_cond_destroy(bd_cond_t cond);
 
 #endif 

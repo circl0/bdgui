@@ -22,8 +22,7 @@
 #include "render/painter.h"
 #include "render/cairo/cairo_surface.h"
 #include "render/cairo/cairo_region.h"
-#include "event/base.h"
-#include "event/events.h"
+#include "event/event.h"
 
 static bd_windows_manager_t manager = BD_NULL;
 
@@ -33,7 +32,6 @@ static BD_INT bd_windows_manager_handle_event_function(const BD_HANDLE e, BD_INT
 	bd_event_t event = (bd_event_t) data;
 
 	if (window != BD_NULL && event != BD_NULL) {
-		// printf("send window event %ld us\n", bd_get_tick_count());
 		window->send_event(window, event);
 	}
 
@@ -59,6 +57,7 @@ static BD_HANDLE bd_windows_manager_thread_function(BD_HANDLE data)
 	}
 }
 
+
 static BD_INT bd_windows_manager_clip_free_region_function(const BD_HANDLE e, BD_INT location, BD_HANDLE data)
 {
 	const bd_window_t window = (const bd_window_t) e;
@@ -81,7 +80,7 @@ static void bd_windows_render_free_region(bd_windows_manager_t mananger)
 {
 	bd_surface_t surface = mananger->get_surface(mananger);
 	bd_rect screen = {0, 0, surface->get_width(surface), surface->get_height(surface)};
-	bd_region_t screen_region = BD_SUP(bd_cairo_region_create(&screen), bd_region);
+	bd_region_t screen_region = bd_region_create_by_rect(&screen);
 	bd_windows_manager_clip_free_region(manager, screen_region);
 
 	surface->lock(surface);
@@ -114,9 +113,10 @@ static void bd_windows_handle_window_update_finish_event(bd_windows_manager_t ma
 	target_event->finished++;
 	printf("target_event %d\n", target_event->finished);
 	if (target_event->finished == bd_list_size(manager->windows_list)) {
-		printf("bd_windows_handle_window_update_finish_event\n");
+		// printf("bd_windows_handle_window_update_finish_event\n");
 		switch(target_event->id) {
 			case BD_EVENT_WINDOW_INVALIDATE:
+				printf("BD_EVENT_WINDOW_INVALIDATE finish\n");
 				bd_window_invalidate_event_delete(BD_SUB(target_event, bd_event, bd_window_invalidate_event));
 				bd_windows_render_free_region(manager);
 
@@ -161,6 +161,7 @@ void bd_windows_manager_constructor(bd_windows_manager_t manager, bd_surface_t s
 	manager->cursor = bd_cursor_create();
 	manager->windows_list = bd_list_create();
 	manager->event_queue = bd_event_queue_create();
+	manager->windows_region = BD_NULL;
 	manager->thread = bd_thread_create(bd_windows_manager_thread_function);
 	manager->thread->start(manager->thread, manager);
 
@@ -173,7 +174,7 @@ void bd_windows_manager_destructor(bd_windows_manager_t manager)
 {
 	bd_event_queue_destroy(manager->event_queue);
 	bd_list_destroy(manager->windows_list);
-	bd_cairo_surface_destroy(BD_SUB(manager->surface, bd_surface, bd_cairo_surface));
+	bd_surface_destroy(manager->surface);
 	bd_cursor_destroy(manager->cursor);
 }
 
@@ -203,6 +204,7 @@ void bd_windows_manager_handle_event(bd_windows_manager_t manager)
 			bd_mouse_button_event_t mouse_button_event = BD_SUB(event, bd_event, bd_mouse_button_event);
 			mouse_button_event->x = mouse_button_event->x * surface->get_width(surface) / 255;
 			mouse_button_event->y = mouse_button_event->y * surface->get_height(surface) / 255;
+			printf("BD_EVENT_ON_MOUSE_BUTTON %d, %d\n", mouse_button_event->x, mouse_button_event->y);
 			break;
 		}
 		case BD_EVENT_ON_MOUSE_MOVE:
@@ -211,6 +213,7 @@ void bd_windows_manager_handle_event(bd_windows_manager_t manager)
 			bd_mouse_move_event_t mouse_move_event = BD_SUB(event, bd_event, bd_mouse_move_event);
 			mouse_move_event->x = mouse_move_event->x * surface->get_width(surface) / 255;
 			mouse_move_event->y = mouse_move_event->y * surface->get_height(surface) / 255;
+			printf("BD_EVENT_ON_MOUSE_MOVE %d, %d\n", mouse_move_event->x, mouse_move_event->y);
 			break;			
 		}
 		case BD_EVENT_WINDOW_UPDATE_FINISH:
@@ -221,10 +224,15 @@ void bd_windows_manager_handle_event(bd_windows_manager_t manager)
 		case BD_EVENT_ON_INVALIDATE:
 		{
 			bd_window_manager_invalidate_event_delete(BD_SUB(event, bd_event, bd_window_manager_invalidate_event));
+			
+			manager->update_clip_region(manager);
+
 			bd_window_invalidate_event_t window_invalidate_event = bd_window_invalidate_event_new();
 			window_invalidate_event->constructor(window_invalidate_event);
 			window_invalidate_event->object = BD_INVALIDATE_FROM_WINDOW_MANAGER;
 			event = BD_SUP(window_invalidate_event, bd_event);
+
+			bd_surface_t surface = manager->get_surface(manager);
 			break;
 		}
 	}
@@ -260,20 +268,31 @@ bd_surface_t bd_windows_manager_get_surface(bd_windows_manager_t manager)
 static BD_INT bd_windows_manager_update_clip_region_function(const BD_HANDLE e, BD_INT location, BD_HANDLE data)
 {
 	const bd_window_t window = (const bd_window_t) e;
-	bd_window_t target_window = (bd_window_t) data;
-	if (window == target_window) {
-		return 0;
-	}
+	bd_region_t region = (bd_window_t) data;
+	printf("region %d\n", region->get_rectangle_num(region));
 	bd_rect bound;
 	BD_SUP(window, bd_component)->get_bound(BD_SUP(window, bd_component), &bound);
-	target_window->clip_region->substract(target_window->clip_region, &bound);
+
+	bd_region_t clip_region = bd_region_create_by_rect(&bound);
+
+	clip_region->substract_region(clip_region, region);
+	printf("clip_region %d\n", clip_region->get_rectangle_num(clip_region));
+
+	window->set_clip_region(window, clip_region);
+	region->add(region, &bound);
 
 	return 1;
 }
 
-void bd_windows_manager_update_clip_region(bd_windows_manager_t manager, bd_window_t window)
+void bd_windows_manager_update_clip_region(bd_windows_manager_t manager)
 {
-	bd_list_for_each(manager->windows_list, bd_windows_manager_update_clip_region_function, window);
+	if (manager->windows_region == BD_NULL) {
+		manager->windows_region = bd_region_create();
+	}
+	bd_list_for_each(manager->windows_list, bd_windows_manager_update_clip_region_function, manager->windows_region);
+
+	bd_region_destroy(manager->windows_region);
+	manager->windows_region = BD_NULL;
 }
 
 void bd_windows_manager_bring_to_first(bd_windows_manager_t manager, bd_window_t window)

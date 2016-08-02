@@ -36,6 +36,10 @@
 #define BD_LONGINT	long int
 #define BD_ULONGINT unsigned long int
 
+#define BD_BOOL     int
+#define BD_TRUE     1
+#define BD_FALSE    0
+
 #define BD_SIZE		size_t
 
 #define BD_UINT8	uint8_t
@@ -54,6 +58,13 @@ typedef enum bd_type {
 	BD_TYPE_EVENT,
 	BD_TYPE_DEV
 } bd_type;
+
+typedef enum bd_input_type {
+	BD_INPUT_INVALID = -1,
+	BD_INPUT_MOUSE,
+	BD_INPUT_TOUCH,
+	BD_INPUT_KEYBOARD
+} bd_input_type;
 
 typedef enum bd_color_type {
 	BD_COLOR_INVALID = -1,

@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  BDGUI Team
+　* Copyright (C) 2016  Allen Yuan
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,28 +16,25 @@
  *
 */
 
-#include "type/type.h"
-#include "system/system.h"
-#include "event/base.h"
-#include "type/list.h"
+#ifndef INCLUDE_SYSTEM_LINUX_THREAD_H_
+#define INCLUDE_SYSTEM_LINUX_THREAD_H_
+
 #include "type/object.h"
+#include <pthread.h>
 
-void bd_event_constructor(bd_event_t self, bd_event_id id)
-{
-	self->id = id;
-	self->sender = BD_NULL;
-	self->finished = 0;
-}
+BD_CLASS(bd_thread_internal) {
 
-void bd_event_destructor(bd_event_t self)
-{
+	pthread_t pt;
 
-}
+	void(*constructor)(bd_thread_internal_t thread);
+	void(*destructor)(bd_thread_internal_t thread);
 
-BD_ABSTRACT_CLASS_CONSTRUCTOR_START(bd_event)
-BD_SUPER_CONSTRUCTOR(bd_object)
-BD_CLASS_METHOD(constructor, bd_event_constructor)
-BD_CLASS_METHOD(destructor, bd_event_destructor)
-BD_ABSTRACT_CLASS_CONSTRUCTOR_END
+	BD_INT (*join)(bd_thread_internal_t thread);
+	BD_INT (*detach)(bd_thread_internal_t thread);
+	BD_INT (*start)(bd_thread_internal_t thread, BD_HANDLE (*run)(BD_HANDLE data), BD_HANDLE data);
+};
 
+bd_thread_internal_t bd_thread_internal_create();
+void bd_thread_internal_destroy(bd_thread_internal_t thread);
 
+#endif

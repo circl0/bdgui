@@ -28,6 +28,7 @@
 #define LW_OOPC_H_INCLUDED_
 
 #include <stdlib.h>
+#include "type/list.h"
 
 // ���ú�(��������ѡ��һ):
 // LW_OOPC_USE_STDDEF_OFFSETOF          ��ʾʹ��C��׼�����offsetof
@@ -72,6 +73,13 @@ void lw_oopc_report();
 #define lw_oopc_delete lw_oopc_free
 
 #endif
+
+#define VIRTUAL_FUNCTION \
+    bd_list_t virtual_functions; \
+    int virtual_function_num;
+
+#define VIRTUAL_FUNCTION_SETTING(f1, f2) \
+    
 
 #define INTERFACE(type)             \
 typedef struct type type, *type##_t;           \

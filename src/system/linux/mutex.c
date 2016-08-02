@@ -17,29 +17,46 @@
 */
 
 
-#include "system/mutex.h"
+#include "system/linux/mutex.h"
 
-//#ifdef WITH_LINUX
-
-void bd_mutex_init(bd_mutex_t* mutex)
+bd_mutex_internal_t bd_mutex_internal_create()
 {
-	pthread_mutex_init(mutex, NULL);
+	bd_mutex_internal_t mutex = bd_mutex_internal_new();
+	mutex->constructor(mutex);
+	return mutex;
 }
 
-void bd_mutex_destroy(bd_mutex_t* mutex)
+void bd_mutex_internal_destroy(bd_mutex_internal_t mutex)
 {
-	pthread_mutex_destroy(mutex);
+	bd_mutex_internal_delete(mutex);
 }
 
-BD_INT bd_mutex_lock(bd_mutex_t* mutex)
+void bd_linux_mutex_constructor(bd_mutex_internal_t mutex)
 {
-	return pthread_mutex_lock(mutex);
+	pthread_mutex_init(&mutex->pm, NULL);
 }
 
-BD_INT bd_mutex_unlock(bd_mutex_t* mutex)
+void bd_linux_mutex_destructor(bd_mutex_internal_t mutex)
 {
-	return pthread_mutex_unlock(mutex);
+	pthread_mutex_destroy(&mutex->pm);
+}
+
+BD_INT bd_linux_mutex_lock(bd_mutex_internal_t mutex)
+{
+	return pthread_mutex_lock(&mutex->pm);
+}
+
+BD_INT bd_linux_mutex_unlock(bd_mutex_internal_t mutex)
+{
+	return pthread_mutex_unlock(&mutex->pm);
 }
 
 
-//#endif
+BD_CLASS_CONSTRUCTOR_START(bd_mutex_internal)
+BD_CLASS_METHOD(constructor, bd_linux_mutex_constructor)
+BD_CLASS_METHOD(destructor, bd_linux_mutex_destructor)
+BD_CLASS_METHOD(lock, bd_linux_mutex_lock)
+BD_CLASS_METHOD(unlock, bd_linux_mutex_unlock)
+BD_CLASS_CONSTRUCTOR_END
+
+BD_CLASS_DESTRUCTOR(bd_mutex_internal)

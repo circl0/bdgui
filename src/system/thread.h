@@ -22,15 +22,19 @@
 
 #include "type/type.h"
 #include "type/object.h"
+#include "system/linux/thread.h"
+
+typedef BD_HANDLE (*bd_runnable)(BD_HANDLE data);
 
 BD_CLASS(bd_thread) {
 	BD_EXTENDS(bd_object);
 
-	BD_ULONGINT id;
+	bd_thread_internal_t thread_internal;
 
-	void (*constructor)(bd_thread_t thread, BD_HANDLE (*run)(BD_HANDLE data));
+	void (*constructor)(bd_thread_t thread, bd_runnable runnable);
 	void (*destructor)(bd_thread_t thread);
-	BD_HANDLE (*run)(BD_HANDLE data);
+	
+	bd_runnable runnable;
 
 	BD_INT (*join)(bd_thread_t thread);
 	BD_INT (*detach)(bd_thread_t thread);
@@ -38,8 +42,7 @@ BD_CLASS(bd_thread) {
 
 };
 
-bd_thread_t bd_thread_create(BD_HANDLE (*run)(BD_HANDLE data));
-
+bd_thread_t bd_thread_create(bd_runnable runnable);
 void bd_thread_destroy(bd_thread_t thread);
 
 #endif /* INCLUDE_SYSTEM_THREAD_H_ */

@@ -20,22 +20,31 @@
 #ifndef INCLUDE_RENDER_PAINTER_INTERNAL_CAIRO_REGION_H_
 #define INCLUDE_RENDER_PAINTER_INTERNAL_CAIRO_REGION_H_
 
-#include "render/region.h"
 #include "type/object.h"
 #include <cairo.h>
 
-BD_CLASS(bd_cairo_region) {
-	BD_IMPLEMENTS(bd_region);
+BD_CLASS(bd_region_internal) {
 	
 	cairo_region_t* cr;
 
 	// con/des
-    void (*constructor)(bd_cairo_region_t cr, bd_rect_t rect);
-    void (*destructor)(bd_cairo_region_t cr);
+    void (*constructor)(bd_region_internal_t region);
+    void (*constructor2)(bd_region_internal_t region, bd_rect_t rect);
+    void (*destructor)(bd_region_internal_t region);
+
+   	BD_INT (*get_rectangle_num)(bd_region_internal_t region);
+	void (*get_rectangle)(bd_region_internal_t region, BD_INT num, bd_rect_t rect);
+	void (*substract)(bd_region_internal_t region, bd_rect_t rect);
+	void (*add)(bd_region_internal_t region, bd_rect_t rect);
+	void (*substract_region)(bd_region_internal_t region, bd_region_internal_t other);
+	BD_INT (*equal)(bd_region_internal_t region, bd_region_internal_t other);
+	BD_INT (*contains)(bd_region_internal_t region, bd_rect_t rect);
+	BD_INT (*contains_point)(bd_region_internal_t region, BD_INT x, BD_INT y);
 
 };
 
-bd_cairo_region_t bd_cairo_region_create(bd_rect_t rect);
-void bd_cairo_region_destroy(bd_cairo_region_t cairo_region);
+bd_region_internal_t bd_region_internal_create_by_rect(bd_rect_t rect);
+bd_region_internal_t bd_region_internal_create();
+void bd_region_internal_destroy(bd_region_internal_t region);
 
 #endif

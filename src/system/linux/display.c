@@ -21,92 +21,99 @@
 #include "system/linux/framebuffer.h"
 #include "utils/log.h"
 
-bd_display_t bd_display_create()
+bd_display_internal_t bd_display_internal_create()
 {
-	bd_linux_display_t linux_display = bd_linux_display_new();
-	linux_display->constructor(linux_display);
-	return BD_SUP(linux_display, bd_display);
+	bd_display_internal_t display = bd_display_internal_new();
+	display->constructor(display);
+	return display;
 }
 
-void bd_display_destroy(bd_display_t display)
+void bd_display_internal_destroy(bd_display_internal_t display)
 {
-	bd_linux_display_t linux_display = BD_SUB(display, bd_display, bd_linux_display);
-	bd_linux_display_delete(linux_display);
+	bd_display_internal_delete(display);
 }
 
-void bd_linux_display_constructor(bd_linux_display_t linux_display)
+void bd_linux_display_constructor(bd_display_internal_t display)
 {
-	if (linux_display == BD_NULL) {
+	if (display == BD_NULL) {
 		return;
 	}
-	bd_display_t display = BD_SUP(linux_display, bd_display);
-	display->constructor(display);
 
-	linux_display->fb = bd_fb_dev_create();
+	display->fb = bd_fb_dev_create();
 }
 
-void bd_linux_display_destructor(bd_linux_display_t linux_display)
+void bd_linux_display_destructor(bd_display_internal_t display)
 {
-	if (linux_display == BD_NULL) {
+	if (display == BD_NULL) {
 		return;
 	}
 	
-	bd_fb_dev_destroy(linux_display->fb);
+	bd_fb_dev_destroy(display->fb);
 
-	bd_display_t display = BD_SUP(linux_display, bd_display);
 	display->destructor(display);	
 }
 
-BD_INT bd_linux_display_open(bd_display_t display)
+BD_INT bd_linux_display_open(bd_display_internal_t display)
 {
 	if (display == BD_NULL) {
 		return -1;
 	}
-	bd_linux_display_t linux_display = BD_SUB(display, bd_display, bd_linux_display);
-	BD_INT result = bd_fb_dev_open(linux_display->fb);
+	BD_INT result = bd_fb_dev_open(display->fb);
 	if (result < 0) {
 		return -1;
 	}
-	display->screen_width = linux_display->fb->width;
-	display->screen_height = linux_display->fb->height;
-	display->color_type = BD_COLOR_RGB565;
+	return 0;
 }
 
-BD_INT bd_linux_display_close(bd_display_t display)
+BD_INT bd_linux_display_close(bd_display_internal_t display)
 {
 	if (display == BD_NULL) {
 		return -1;
 	}
-	bd_linux_display_t linux_display = BD_SUB(display, bd_display, bd_linux_display);
-	return bd_fb_dev_close(linux_display->fb);
+	return bd_fb_dev_close(display->fb);
 }
 
-void bd_linux_display_flip(bd_display_t display)
+void bd_linux_display_flip(bd_display_internal_t display)
 {
 	if (display == BD_NULL) {
 		return;
 	}
-	bd_linux_display_t linux_display = BD_SUB(display, bd_display, bd_linux_display);
-	bd_fb_dev_flip(linux_display->fb);
+	bd_fb_dev_flip(display->fb);
 }
 
-BD_HANDLE bd_linux_display_get_buffer(bd_display_t display)
+BD_HANDLE bd_linux_display_get_buffer(bd_display_internal_t display)
 {
 	if (display == BD_NULL) {
 		return BD_NULL;
 	}
-	bd_linux_display_t linux_display = BD_SUB(display, bd_display, bd_linux_display);
-	return linux_display->fb->back_buffer;
+	return display->fb->back_buffer;
 }
 
-BD_CLASS_CONSTRUCTOR_START(bd_linux_display)
-BD_SUPER_CONSTRUCTOR(bd_display)
+BD_UINT bd_linux_display_get_width(bd_display_internal_t display)
+{
+	return display->fb->width;
+}
+
+BD_UINT bd_linux_display_get_height(bd_display_internal_t display)
+{
+	return display->fb->height;
+}
+
+bd_color_type bd_linux_display_get_color_type(bd_display_internal_t display)
+{
+	return BD_COLOR_RGB565;
+}
+
+BD_CLASS_CONSTRUCTOR_START(bd_display_internal)
 BD_CLASS_METHOD(constructor, bd_linux_display_constructor)
 BD_CLASS_METHOD(destructor, bd_linux_display_destructor)
-BD_CLASS_METHOD(bd_display.open, bd_linux_display_open)
-BD_CLASS_METHOD(bd_display.close, bd_linux_display_close)
-BD_CLASS_METHOD(bd_display.flip, bd_linux_display_flip)
-BD_CLASS_METHOD(bd_display.get_buffer, bd_linux_display_get_buffer)
+BD_CLASS_METHOD(open, bd_linux_display_open)
+BD_CLASS_METHOD(close, bd_linux_display_close)
+BD_CLASS_METHOD(flip, bd_linux_display_flip)
+BD_CLASS_METHOD(get_buffer, bd_linux_display_get_buffer)
+BD_CLASS_METHOD(get_width, bd_linux_display_get_width)
+BD_CLASS_METHOD(get_height, bd_linux_display_get_height)
+BD_CLASS_METHOD(get_color_type, bd_linux_display_get_color_type)
 BD_CLASS_CONSTRUCTOR_END
 
-BD_CLASS_DESTRUCTOR(bd_linux_display)
+BD_CLASS_DESTRUCTOR(bd_display_internal)

@@ -36,6 +36,6 @@ void bd_log(BD_STRING tag, BD_STRING format, ...)
 	va_start(arg_ptr, format);
 	vsprintf(buf + length, format, arg_ptr);
 	va_end(arg_ptr);
-	printf(buf);
+	printf("%s", buf);
 // #endif
 }

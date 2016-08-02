@@ -19,17 +19,24 @@
 #ifndef INCLUDE_SYSTEM_MUTEX_H_
 #define INCLUDE_SYSTEM_MUTEX_H_
 
-// #ifdef WITH_LINUX
-#include <pthread.h>
-typedef pthread_mutex_t bd_mutex_t;
-// #endif
-
 #include "type/type.h"
+#include "system/linux/mutex.h"
+ 
+BD_CLASS(bd_mutex) {
+	BD_EXTENDS(bd_object);
 
-void bd_mutex_init(bd_mutex_t* mutex);
-void bd_mutex_destroy(bd_mutex_t* mutex);
+	bd_mutex_internal_t mutex_internal;
 
-BD_INT bd_mutex_lock(bd_mutex_t* mutex);
-BD_INT bd_mutex_unlock(bd_mutex_t* mutex);
+	void (*constructor)(bd_mutex_t mutex);
+	void (*destructor)(bd_mutex_t mutex);
+
+	BD_INT (*lock)(bd_mutex_t mutex);
+	BD_INT (*unlock)(bd_mutex_t mutex);
+	BD_INT (*try_lock)(bd_mutex_t mutex);
+
+};
+
+bd_mutex_t bd_mutex_create();
+void bd_mutex_destroy(bd_mutex_t mutex);
 
 #endif 

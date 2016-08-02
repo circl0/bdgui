@@ -22,7 +22,7 @@
 #include "type/type.h"
 #include "application/windows_manager.h"
 #include "system/system.h"
-#include "event/events.h"
+#include "event/event.h"
 #include "render/cairo/cairo_region.h"
 #include "render/region.h"
 
@@ -40,32 +40,32 @@ static BD_HANDLE bd_window_thread_function(BD_HANDLE data)
 	return BD_NULL;
 }
 
-static void bd_window_update_clip_region(bd_window_t window, bd_painter_t painter)
+static BD_INT bd_windows_manager_render_children_function(const BD_HANDLE e, BD_INT location, BD_HANDLE data)
 {
-	// 1. get windows manager
-	bd_windows_manager_t manager = bd_windows_manager_get();
-	// 2. delete the old clip region
-	if (window->clip_region != BD_NULL) {
-		bd_cairo_region_delete(BD_SUB(window->clip_region, bd_region, bd_cairo_region));
-	}
-	// 3. get current bound
-	bd_rect bound;
-	BD_SUP(window, bd_component)->get_bound(BD_SUP(window, bd_component), &bound);
-	// 4. update the clip region
-	window->clip_region = BD_SUP(bd_cairo_region_create(&bound), bd_region);
-	manager->update_clip_region(manager, window);
-	// 5. clip the screen
-	painter->clip(painter, window->clip_region);
+	const bd_component_t component = (const bd_component_t) e;
+	bd_surface_t surface = (bd_surface_t) data;
+	component->on_render(component, surface);
+	return 1;
 }
 
-void bd_window_constructor(bd_window_t window)
+static void bd_windows_manager_render_children(bd_window_t window)
 {
+	bd_list_t children = window->children;
+	bd_windows_manager_t manager = bd_windows_manager_get();
+	bd_surface_t surface = manager->get_surface(manager);
+	bd_list_for_each(children, bd_windows_manager_render_children_function, surface);
+}
+
+void bd_window_constructor(bd_window_t window, BD_INT id)
+{
+	BD_SUP(window, bd_component)->constructor(BD_SUP(window, bd_component), id);
 	window->clip_region = BD_NULL;
 	window->event_queue = bd_event_queue_create();
 	window->thread = bd_thread_create(bd_window_thread_function);
+	window->children = bd_list_create();
+	window->is_selected = BD_FALSE;
 	window->thread->start(window->thread, window);
-	window->is_selected = 0;
-	// BD_SUP(window, bd_component)->invalidate(BD_SUP(window, bd_component));
+
 }
 
 void bd_window_destructor(bd_window_t window)
@@ -86,12 +86,10 @@ void bd_window_on_render(bd_component_t component, bd_surface_t surface)
 	surface->lock(surface);
 
 	printf("start render %ld us\n", bd_get_tick_count());
-	printf("%d, %d\n", component->x, component->y);
 	bd_window_t window = BD_SUB(component, bd_component, bd_window);
 	bd_painter_t painter = surface->get_painter(surface);
 
-	bd_window_update_clip_region(window, painter);
-
+	painter->clip(painter, window->clip_region);
 
 	bd_color c1 = {0xbf, 0xbf, 0xbf};
     painter->set_color(painter, c1);
@@ -132,7 +130,10 @@ void bd_window_on_render(bd_component_t component, bd_surface_t surface)
 	painter->draw_line(painter, component->x + component->width + 1, component->y + component->height + 1, component->x + component->width + 1, component->y + 1);
 	painter->draw_line(painter, component->x + component->width + 1, component->y + component->height + 1, component->x + 1, component->y + component->height + 1);
 
+	bd_windows_manager_render_children(window);
+
     printf("end render %ld us\n", bd_get_tick_count());
+
 	surface->flip(surface);
     surface->unlock(surface);
 }
@@ -183,22 +184,49 @@ void bd_window_handle_event(bd_window_t window, bd_event_t event)
 			// callback
 			bd_mouse_button_event_t mouse_button_event = BD_SUB(event, bd_event, bd_mouse_button_event);
 			bd_windows_manager_t manager = bd_windows_manager_get();
-			if (window->clip_region->contains_point(window->clip_region, mouse_button_event->x, mouse_button_event->y)) {
-				switch(mouse_button_event->button) {
-					case BD_MOUSE_BUTTON_LEFT:
-						printf("bring_to_first\n");
-						manager->bring_to_first(manager, window);
-							
-						bd_window_manager_invalidate_event_t invalidate_event = bd_window_manager_invalidate_event_new();
-						invalidate_event->constructor(invalidate_event);
-						manager->send_event(manager, BD_SUP(invalidate_event, bd_event));
+			switch(mouse_button_event->button) {
+				case BD_MOUSE_BUTTON_LEFT:
+				{
+					if (mouse_button_event->action == BD_MOUSE_BUTTON_DOWN) {
+						if (window->clip_region->contains_point(window->clip_region, mouse_button_event->x, mouse_button_event->y)) {
+							manager->bring_to_first(manager, window);
 
-						break;
-					case BD_MOUSE_BUTTON_WHEEL:
-						break;
-					case BD_MOUSE_BUTTON_RIGHT:
-						break;
+							window->is_selected = BD_TRUE;
+
+							window->selected_x = mouse_button_event->x;
+							window->selected_y = mouse_button_event->y;	
+
+							bd_window_manager_invalidate_event_t invalidate_event = bd_window_manager_invalidate_event_new();
+							invalidate_event->constructor(invalidate_event);
+							manager->send_event(manager, BD_SUP(invalidate_event, bd_event));
+						}
+					}
+					else if (mouse_button_event->action == BD_MOUSE_BUTTON_UP) {
+						window->is_selected = BD_FALSE;
+					}
+					break;
 				}
+				case BD_MOUSE_BUTTON_WHEEL:
+					break;
+				case BD_MOUSE_BUTTON_RIGHT:
+					break;
+			}
+			break;
+		}
+		case BD_EVENT_ON_MOUSE_MOVE:
+		{
+			bd_mouse_move_event_t mouse_move_event = BD_SUB(event, bd_event, bd_mouse_move_event);
+			if (window->is_selected) {
+				bd_component_t c = BD_SUP(window, bd_component);
+
+				c->move(c, mouse_move_event->x - window->selected_x, mouse_move_event->y -  window->selected_y);
+				window->selected_x = mouse_move_event->x;
+				window->selected_y = mouse_move_event->y;
+
+				bd_windows_manager_t manager = bd_windows_manager_get();
+				bd_window_manager_invalidate_event_t invalidate_event = bd_window_manager_invalidate_event_new();
+				invalidate_event->constructor(invalidate_event);
+				manager->send_event(manager, BD_SUP(invalidate_event, bd_event));
 			}
 			break;
 		}
@@ -229,18 +257,6 @@ void bd_window_get_bound(bd_component_t c, bd_rect_t rect)
 	rect->height = c->get_height(c);
 }
 
-void bd_window_move(bd_component_t component, BD_INT x, BD_INT y)
-{
-	bd_window_t window = BD_SUB(component, bd_component, bd_window);
-	component->x = x;
-	component->y = y;
-	bd_window_move_event_t window_move_event = bd_window_move_event_new();
-	window_move_event->constructor(window_move_event);
-	window_move_event->x = x;
-	window_move_event->y = y;
-	window->send_event(window, BD_SUP(window_move_event, bd_event));
-}
-
 void bd_window_resize(bd_component_t component, BD_INT width, BD_INT height)
 {
 	bd_window_t window = BD_SUB(component, bd_component, bd_window);
@@ -253,18 +269,29 @@ void bd_window_resize(bd_component_t component, BD_INT width, BD_INT height)
 	window->send_event(window, BD_SUP(window_resize_event, bd_event));
 }
 
+void bd_window_add_child(bd_window_t window, bd_component_t component)
+{
+	bd_list_push(window->children, component);
+}
+
+void bd_window_set_clip_region(bd_window_t window, bd_region_t region)
+{
+	window->clip_region = region;
+}
+
 BD_CLASS_CONSTRUCTOR_START(bd_window)
 BD_SUPER_CONSTRUCTOR(bd_component)
 BD_CLASS_METHOD(bd_component.on_render, bd_window_on_render)
 BD_CLASS_METHOD(bd_component.invalidate, bd_window_invalidate)
 BD_CLASS_METHOD(bd_component.get_bound, bd_window_get_bound)
-BD_CLASS_METHOD(bd_component.move, bd_window_move)
 BD_CLASS_METHOD(bd_component.resize, bd_window_resize)
 BD_CLASS_METHOD(constructor, bd_window_constructor)
 BD_CLASS_METHOD(destructor, bd_window_destructor)
 BD_CLASS_METHOD(send_event, bd_window_send_event)
 BD_CLASS_METHOD(handle_event, bd_window_handle_event)
+BD_CLASS_METHOD(add_child, bd_window_add_child)
 BD_CLASS_METHOD(set_title, bd_window_set_title)
+BD_CLASS_METHOD(set_clip_region, bd_window_set_clip_region)
 
 BD_CLASS_CONSTRUCTOR_END
 

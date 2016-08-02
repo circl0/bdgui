@@ -23,8 +23,23 @@
 #include "type/type.h"
 #include "type/object.h"
 #include "render/painter.h"
+#include "render/cairo/cairo_surface.h"
+#include "system/display.h"
 
-BD_INTERFACE(bd_surface) {
+BD_CLASS(bd_surface) {
+	BD_EXTENDS(bd_object);
+
+	bd_surface_internal_t surface_internal;
+	bd_painter_t painter;
+	bd_display_t display;
+
+	BD_INT width;
+	BD_INT height;
+	bd_color_type color_type;
+
+
+	void (*constructor)(bd_surface_t surface, bd_display_t display);
+	void (*destructor)(bd_surface_t surface);
 
     bd_painter_t (*get_painter)(bd_surface_t surface);
     BD_UINT (*get_width)(bd_surface_t surface);
@@ -35,5 +50,8 @@ BD_INTERFACE(bd_surface) {
     void (*flip)(bd_surface_t surface);
 
 };
+
+bd_surface_t bd_surface_create(bd_display_t display);
+void bd_surface_destroy(bd_surface_t surface);
 
 #endif //BDGUI_SURFACE_H

@@ -38,6 +38,8 @@ BD_CLASS(bd_windows_manager){
 	bd_event_queue_t event_queue;
 	bd_thread_t thread;
 
+	bd_region_t windows_region;
+
 	void (*constructor)(bd_windows_manager_t manager, bd_surface_t surface);
 	void (*destructor)(bd_windows_manager_t manager);
 
@@ -47,7 +49,7 @@ BD_CLASS(bd_windows_manager){
 	void (*add)(bd_windows_manager_t manager, bd_window_t window);
 	void (*remove)(bd_windows_manager_t manager, bd_window_t window);
 
-	void (*update_clip_region)(bd_windows_manager_t manager, bd_window_t window);
+	void (*update_clip_region)(bd_windows_manager_t manager);
 	void (*bring_to_first)(bd_windows_manager_t manager, bd_window_t window);
 
 	bd_surface_t (*get_surface)(bd_windows_manager_t manager);

@@ -25,21 +25,15 @@
 
 static bd_system_service_imp_t service_imp = BD_NULL;
 
-static void bd_source_pool_event_function(bd_source_pool_t pool)
+static void bd_source_pool_event_function(bd_source_t source)
 {
-	BD_UINT size = pool->get_size(pool);
-	for (BD_UINT i = 0; i < size; ++i) {
-		if (pool->has_event(pool, i)) {
-			bd_source_t source = pool->get_source(pool, i);
-			bd_event_t event = source->read_events(source);
-			if (event == BD_NULL) {
-				continue;
-			}
-			bd_windows_manager_t manager = bd_windows_manager_get();
-			if (event != BD_NULL && manager != BD_NULL) {
-				manager->send_event(manager, event);
-			}
-		}
+	bd_event_t event = source->read_events(source);
+	if (event == BD_NULL) {
+		return;
+	}
+	bd_windows_manager_t manager = bd_windows_manager_get();
+	if (event != BD_NULL && manager != BD_NULL) {
+		manager->send_event(manager, event);
 	}
 }
 
@@ -86,16 +80,13 @@ void bd_system_service_imp_init(bd_system_service_t service)
 	}
 
 	bd_system_service_imp_t service_imp = BD_SUB(service, bd_system_service, bd_system_service_imp);
-
     service_imp->display = bd_display_create();
-
+    
     if (service_imp->display == BD_NULL) {
         bd_log("display_test", "display create failure");
         return;
     }
-
     service_imp->display->open(service_imp->display);
-
     // 2. init source
    	service_imp->source_pool = bd_source_pool_create(2);
 

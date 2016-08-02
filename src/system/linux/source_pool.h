@@ -21,15 +21,22 @@
 
 #include "system/source.h"
 #include "type/object.h"
-#include "system/source_pool.h"
 
-BD_CLASS(bd_linux_source_pool) {
-	BD_EXTENDS(bd_source_pool);
+BD_CLASS(bd_source_pool_internal) {
 
 	struct pollfd* fds;
+	BD_INT size;
 
-	void(*constructor)(bd_linux_source_pool_t self, BD_UINT size);
-	void(*destructor)(bd_linux_source_pool_t self);
+	void(*constructor)(bd_source_pool_internal_t source_pool, BD_INT size);
+	void(*destructor)(bd_source_pool_internal_t source_pool);
+
+	void(*push)(bd_source_pool_internal_t pool, bd_source_t source, BD_INT num);
+	void(*clear)(bd_source_pool_internal_t pool, BD_INT num);
+
+	void(*wait_for_events)(bd_source_pool_internal_t pool, BD_INT* index, BD_INT size);
 };
+
+bd_source_pool_internal_t bd_source_pool_internal_create(BD_INT size);
+void bd_source_pool_internal_destroy(bd_source_pool_internal_t pool);
 
 #endif 

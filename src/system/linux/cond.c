@@ -19,27 +19,43 @@
 
 #include "system/cond.h"
 
-//#ifdef WITH_LINUX
-
-void bd_cond_init(bd_cond_t* cond)
+bd_cond_internal_t bd_cond_internal_create()
 {
-	pthread_cond_init(cond, NULL);
+	bd_cond_internal_t cond = bd_cond_internal_new();
+	cond->constructor(cond);
+	return cond;
 }
 
-void bd_cond_destroy(bd_cond_t* cond)
+void bd_cond_internal_destroy(bd_cond_internal_t cond)
 {
-	pthread_cond_destroy(cond);
+	bd_cond_internal_delete(cond);
 }
 
-BD_INT bd_cond_wait(bd_cond_t* cond, bd_mutex_t* mutex)
+void bd_linux_cond_constructor(bd_cond_internal_t cond)
 {
-	return pthread_cond_wait(cond, mutex);
+	pthread_cond_init(&cond->pc, NULL);
 }
 
-BD_INT bd_cond_signal(bd_cond_t* cond)
+void bd_linux_cond_destructor(bd_cond_internal_t cond)
 {
-	return pthread_cond_signal(cond);
+	pthread_cond_destroy(&cond->pc);
 }
 
+BD_INT bd_linux_cond_wait(bd_cond_internal_t cond, bd_mutex_internal_t mutex)
+{
+	return pthread_cond_wait(&cond->pc, &mutex->pm);
+}
 
-//#endif
+BD_INT bd_linux_cond_signal(bd_cond_internal_t cond)
+{
+	return pthread_cond_signal(&cond->pc);
+}
+
+BD_CLASS_CONSTRUCTOR_START(bd_cond_internal)
+BD_CLASS_METHOD(constructor, bd_linux_cond_constructor)
+BD_CLASS_METHOD(destructor, bd_linux_cond_destructor)
+BD_CLASS_METHOD(wait, bd_linux_cond_wait)
+BD_CLASS_METHOD(signal, bd_linux_cond_signal)
+BD_CLASS_CONSTRUCTOR_END
+
+BD_CLASS_DESTRUCTOR(bd_cond_internal)

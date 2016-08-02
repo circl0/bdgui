@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  BDGUI Team
+　* Copyright (C) 2016  Allen Yuan
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,25 +16,26 @@
  *
 */
 
+#ifndef INCLUDE_APPLICATION_APPLICATION_H_
+#define INCLUDE_APPLICATION_APPLICATION_H_
+
+#include "component/window.h"
 #include "system/system.h"
-#include <stdlib.h>
-#include <pthread.h>
-#include <sys/poll.h>
-#include <sys/time.h>
+#include "application/windows_manager.h"
 
-BD_HANDLE bd_malloc(BD_INT size)
-{
-	return malloc(size);
-}
+BD_CLASS(bd_application) {
+	BD_EXTENDS(bd_object);
 
-void bd_free(BD_HANDLE handle)
-{
-	free(handle);
-}
+	bd_system_service_t bd_service;
+	bd_windows_manager_t windows_manager;
 
-BD_ULONG bd_get_tick_count()
-{
-	struct timeval time;
-	gettimeofday(&time, NULL);
-	return time.tv_usec;
-}
+	void (*constructor)(bd_application_t app);
+	void (*destructor)(bd_application_t app);	
+
+	void (*run)(bd_application_t app, bd_window_t window);
+};	
+
+bd_application_t bd_application_create();
+void bd_application_destroy(bd_application_t app);
+
+#endif

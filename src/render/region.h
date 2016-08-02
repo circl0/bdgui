@@ -22,16 +22,28 @@
 
 #include "type/type.h"
 #include "type/object.h"
+#include "render/cairo/cairo_region.h"
  
-BD_INTERFACE(bd_region) {
+BD_CLASS(bd_region) {
+
+	bd_region_internal_t region_internal;
+
+	void (*constructor)(bd_region_t region);
+	void (*constructor2)(bd_region_t region, bd_rect_t rect);
+	void (*destructor)(bd_region_t region);
 
 	BD_INT (*get_rectangle_num)(bd_region_t region);
 	void (*get_rectangle)(bd_region_t region, BD_INT num, bd_rect_t rect);
 	void (*substract)(bd_region_t region, bd_rect_t rect);
 	void (*add)(bd_region_t region, bd_rect_t rect);
+	void (*substract_region)(bd_region_t region, bd_region_t other);
 	BD_INT (*equal)(bd_region_t region, bd_region_t other);
 	BD_INT (*contains)(bd_region_t region, bd_rect_t rect);
 	BD_INT (*contains_point)(bd_region_t region, BD_INT x, BD_INT y);
 };
+
+bd_region_t bd_region_create();
+bd_region_t bd_region_create_by_rect(bd_rect_t rect);
+void bd_region_destroy(bd_region_t region);
 
 #endif //BDGUI_REGION_H

@@ -24,98 +24,47 @@
 #include "render/cairo/cairo_painter.h"
 #include "render/cairo/cairo_surface.h"
 
-bd_cairo_surface_t bd_cairo_surface_create(bd_display_t display)
+bd_surface_internal_t bd_surface_internal_create(bd_display_t display)
 {
     if (display == BD_NULL) {
         return BD_NULL;
     }
-    bd_cairo_surface_t cs = bd_cairo_surface_new();
-    cs->constructor(cs, display);
-    return cs;
+    bd_surface_internal_t surface = bd_surface_internal_new();
+    surface->constructor(surface, display);
+    return surface;
 }
 
-void bd_cairo_surface_destroy(bd_cairo_surface_t surface)
+void bd_surface_internal_destroy(bd_surface_internal_t surface)
 {
-    bd_cairo_surface_delete(surface);
+    bd_surface_internal_delete(surface);
 }
 
-void bd_cairo_surface_constructor(bd_cairo_surface_t cs, bd_display_t display)
+void bd_cairo_surface_constructor(bd_surface_internal_t surface, bd_display_t display)
 {
-    if (cs == BD_NULL) return;
-    cs->display = display;
-    cs->buffer = display->get_buffer(display);
-    cs->color_type = display->get_color_type(display);
-    cs->width = display->get_screen_width(display);
-    cs->height = display->get_screen_height(display);
+    if (surface == BD_NULL) return;
+    void* buffer = display->get_buffer(display);
+    bd_color_type color_type = display->get_color_type(display);
 
-    cs->cs = cairo_image_surface_create_for_data((BD_UCHAR*)cs->buffer,
+    BD_INT width = display->get_screen_width(display);
+    BD_INT height = display->get_screen_height(display);
+
+    surface->cs = cairo_image_surface_create_for_data((BD_UCHAR*)buffer,
                                                 CAIRO_FORMAT_RGB16_565,
-                                                cs->width,
-                                                cs->height,
-                                                cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, cs->width));
-    cairo_t* cr = cairo_create(cs->cs);
-
-    cs->painter = bd_cairo_painter_create(cr);
+                                                width,
+                                                height,
+                                                cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, width));
+    cairo_t* cr = cairo_create(surface->cs);
 }
 
-void bd_cairo_surface_destructor(bd_cairo_surface_t cs)
+void bd_cairo_surface_destructor(bd_surface_internal_t surface)
 {
-    if (cs == BD_NULL) return;
-    bd_cairo_painter_destroy(cs->painter);
-    cairo_surface_destroy(cs->cs);
+    if (surface == BD_NULL) return;
+    cairo_surface_destroy(surface->cs);
 }
 
-bd_painter_t bd_cairo_surface_get_painter(bd_surface_t s)
-{
-    if (s == BD_NULL) return BD_NULL;
-    bd_cairo_surface_t cs = BD_SUB(s, bd_surface, bd_cairo_surface);
-    return BD_SUP(cs->painter, bd_painter);
-}
-
-BD_UINT bd_cairo_surface_get_width(bd_surface_t s)
-{
-    if (s == BD_NULL) return 0;
-    bd_cairo_surface_t cs = BD_SUB(s, bd_surface, bd_cairo_surface);
-    return cs->width;
-}
-
-BD_UINT bd_cairo_surface_get_height(bd_surface_t s)
-{
-    if (s == BD_NULL) return 0;
-    bd_cairo_surface_t cs = BD_SUB(s, bd_surface, bd_cairo_surface);
-    return cs->height;
-}
-
-void bd_cairo_surface_lock(bd_surface_t s)
-{
-    if (s == BD_NULL) return;
-    bd_cairo_surface_t cs = BD_SUB(s, bd_surface, bd_cairo_surface);
-    cs->display->lock(cs->display);
-}
-
-void bd_cairo_surface_unlock(bd_surface_t s)
-{
-    if (s == BD_NULL) return;
-    bd_cairo_surface_t cs = BD_SUB(s, bd_surface, bd_cairo_surface);
-    cs->display->unlock(cs->display);
-}
-
-void bd_cairo_surface_flip(bd_surface_t s)
-{
-    if (s == BD_NULL) return;
-    bd_cairo_surface_t cs = BD_SUB(s, bd_surface, bd_cairo_surface);
-    cs->display->flip(cs->display);
-}
-
-BD_CLASS_CONSTRUCTOR_START(bd_cairo_surface)
+BD_CLASS_CONSTRUCTOR_START(bd_surface_internal)
 BD_CLASS_METHOD(constructor, bd_cairo_surface_constructor)
 BD_CLASS_METHOD(destructor, bd_cairo_surface_destructor)
-BD_CLASS_METHOD(bd_surface.get_painter, bd_cairo_surface_get_painter)
-BD_CLASS_METHOD(bd_surface.get_width, bd_cairo_surface_get_width)
-BD_CLASS_METHOD(bd_surface.get_height, bd_cairo_surface_get_height)
-BD_CLASS_METHOD(bd_surface.lock, bd_cairo_surface_lock)
-BD_CLASS_METHOD(bd_surface.unlock, bd_cairo_surface_unlock)
-BD_CLASS_METHOD(bd_surface.flip, bd_cairo_surface_flip)
 BD_CLASS_CONSTRUCTOR_END
 
-BD_CLASS_DESTRUCTOR(bd_cairo_surface)
+BD_CLASS_DESTRUCTOR(bd_surface_internal)

@@ -21,11 +21,16 @@
 
 #include "type/object.h"
 #include "system/source.h"
+#include "system/linux/source_pool.h"
 
 #define BD_SOURCE_POOL_MAX 255
 
-BD_ABSTRACT_CLASS(bd_source_pool) {
+typedef void(*bd_source_pool_events_func)(bd_source_t);
+
+BD_CLASS(bd_source_pool) {
 	BD_EXTENDS(bd_object);
+
+	bd_source_pool_internal_t source_pool_internal;
 
 	BD_UINT size;
 	BD_UINT max_size;
@@ -36,11 +41,11 @@ BD_ABSTRACT_CLASS(bd_source_pool) {
 
 	void(*push)(bd_source_pool_t pool, bd_source_t source);
 	void(*clear)(bd_source_pool_t pool);
-	void(*wait_for_events)(bd_source_pool_t pool, void(*bd_source_pool_events_func)(bd_source_pool_t));
-	BD_INT (*has_event)(bd_source_pool_t pool, BD_UINT i);
 
 	BD_UINT (*get_size)(bd_source_pool_t pool);
 	bd_source_t (*get_source)(bd_source_pool_t pool, BD_UINT i);
+
+	void(*wait_for_events)(bd_source_pool_t pool, bd_source_pool_events_func function);
 
 };
 

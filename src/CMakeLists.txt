@@ -2,13 +2,17 @@ PROJECT(bdgui-lib)
 
 # Source files definition
 SET(SRC_LIB
+  application/application.c
   application/windows_manager.c
   application/cursor.c
   component/component.c
   component/window.c
-  event/base.c
-  event/events.c
+  component/button.c
+  event/event.c
   event/queue.c
+  render/painter.c
+  render/surface.c
+  render/region.c
   render/cairo/cairo_painter.c
   render/cairo/cairo_surface.c
   render/cairo/cairo_region.c
@@ -18,6 +22,9 @@ SET(SRC_LIB
   system/source_pool.c
   system/timer.c
   system/display.c
+  system/thread.c
+  system/mutex.c
+  system/cond.c
   system/linux/display.c
   system/linux/framebuffer.c
   system/linux/input.c

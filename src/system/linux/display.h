@@ -20,17 +20,26 @@
 #define INCLUDE_SYSTEM_LINUX_DISPLAY_H_
 
 #include "system/linux/framebuffer.h"
-#include "system/display.h"
  
-BD_CLASS(bd_linux_display) {
-	BD_EXTENDS(bd_display);
+BD_CLASS(bd_display_internal) {
 
 	bd_fb_dev_t fb;
 
-	void (*constructor)(bd_linux_display_t linux_display);
-	void (*destructor)(bd_linux_display_t linux_display);
+	void (*constructor)(bd_display_internal_t display);
+	void (*destructor)(bd_display_internal_t display);
+
+	BD_INT (*open)(bd_display_internal_t display);
+	BD_INT (*close)(bd_display_internal_t display);
+	void (*flip)(bd_display_internal_t display);
+	BD_HANDLE (*get_buffer)(bd_display_internal_t display);
+
+	BD_UINT (*get_width)(bd_display_internal_t display);
+	BD_UINT (*get_height)(bd_display_internal_t display);
+	bd_color_type (*get_color_type)(bd_display_internal_t display);
 
 };
 
+bd_display_internal_t bd_display_internal_create();
+void bd_display_internal_destroy(bd_display_internal_t display);
 
 #endif /* INCLUDE_SYSTEM_LINUX_DISPLAY_H_ */

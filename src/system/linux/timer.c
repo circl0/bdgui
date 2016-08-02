@@ -21,7 +21,7 @@
 #include "system/timer.h"
 #include "system/linux/timer.h"
 #include "system/source.h"
-#include "event/events.h"
+#include "event/event.h"
 #include "utils/log.h"
 #include <sys/timerfd.h>
 #include <sys/time.h>
@@ -93,7 +93,7 @@ bd_event_t bd_linux_timer_read_event(bd_timer_t self)
 	read(linux_timer->fd, &exp, sizeof(uint64_t));
 	bd_timer_event_t event = bd_timer_event_new();
 	event->constructor(event);
-	event->timer = self;
+	event->id = self->id;
 	return BD_SUP(event, bd_event);
 }
 

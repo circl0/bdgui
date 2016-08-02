@@ -28,8 +28,8 @@ bd_event_queue_t bd_event_queue_create()
 		return BD_NULL;
 	}
 	event_queue->queue = bd_queue_create();
-	bd_mutex_init(&event_queue->mutex);
-	bd_cond_init(&event_queue->cond);
+	event_queue->mutex = bd_mutex_create();
+	event_queue->cond = bd_cond_create();
 	return event_queue;
 }
 
@@ -38,28 +38,28 @@ void bd_event_queue_destroy(bd_event_queue_t event_queue)
 	if (event_queue == BD_NULL) {
 		return;
 	}
-	bd_cond_destroy(&event_queue->cond);
-	bd_mutex_destroy(&event_queue->mutex);
+	bd_cond_destroy(event_queue->cond);
+	bd_mutex_destroy(event_queue->mutex);
 	bd_queue_destroy(event_queue->queue);
 	
 }
 
 void bd_event_queue_push(bd_event_queue_t event_queue, bd_event_t event)
 {
-	bd_mutex_lock(&event_queue->mutex);
+	event_queue->mutex->lock(event_queue->mutex);
 	bd_queue_push(event_queue->queue, event);
-	bd_cond_signal(&event_queue->cond);
-	bd_mutex_unlock(&event_queue->mutex);
+	event_queue->cond->signal(event_queue->cond);
+	event_queue->mutex->unlock(event_queue->mutex);
 }
 
 bd_event_t bd_event_queue_get(bd_event_queue_t event_queue)
 {
 	bd_event_t result = BD_NULL;
-	bd_mutex_lock(&event_queue->mutex);
+	event_queue->mutex->lock(event_queue->mutex);
 	while (bd_queue_size(event_queue->queue) == 0) {
-		bd_cond_wait(&event_queue->cond, &event_queue->mutex);
+		event_queue->cond->wait(event_queue->cond, event_queue->mutex);
 	}
 	result = (bd_event_t) bd_queue_get(event_queue->queue);
-	bd_mutex_unlock(&event_queue->mutex);
+	event_queue->mutex->unlock(event_queue->mutex);
 	return result;
 }

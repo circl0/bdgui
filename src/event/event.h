@@ -17,13 +17,47 @@
 */
 
 
-#ifndef BDGUI_EVENTS_H
-#define BDGUI_EVENTS_H
+#ifndef BD_EVENT_H
+#define BD_EVENT_H
 
-#include "event/base.h"
-#include "system/timer.h"
-#include "component/window.h"
+#include "type/object.h"
+#include "type/type.h"
+//#include "system/timer.h"
 
+#define BD_EVENT_NUM_MAX	256
+
+// event id
+typedef enum bd_event_id {
+    BD_EVENT_INVALID = -1,
+	BD_EVENT_ON_TIMER,
+	BD_EVENT_ON_MOUSE_BUTTON,
+	BD_EVENT_ON_MOUSE_MOVE,
+	BD_EVENT_ON_MOUSE_DRAG,
+	BD_EVENT_ON_KEYBOARD,
+	BD_EVENT_ON_TOUCH,
+	BD_EVENT_ON_INVALIDATE,
+
+	BD_EVENT_WINDOW_INVALIDATE,
+	BD_EVENT_WINDOW_UPDATE_FINISH,
+	BD_EVENT_WINDOW_MOVE,
+	BD_EVENT_WINDOW_RESIZE,
+	BD_EVENT_MAX = BD_EVENT_NUM_MAX,
+} bd_event_id;
+
+// event base
+BD_ABSTRACT_CLASS(bd_event) {
+	BD_EXTENDS(bd_object);
+
+    bd_event_id id;
+    bd_object_t sender;
+    BD_INT finished;
+
+    void(*constructor)(bd_event_t self, bd_event_id id);
+    void(*destructor)(bd_event_t self);
+    bd_event_t (*clone)(bd_event_t self);
+};
+
+// event arg
 typedef enum bd_mouse_button {
 	BD_MOUSE_BUTTON_LEFT = 0,
 	BD_MOUSE_BUTTON_WHEEL,
@@ -50,6 +84,7 @@ typedef enum bd_mouse_move_direction {
 	BD_MOUSE_MOVE_DIRECTION_Y
 } bd_mouse_move_direction;
 
+// events
 BD_CLASS(bd_touch_event) {
 	BD_EXTENDS(bd_event);
 	BD_INT x;
@@ -68,7 +103,7 @@ BD_CLASS(bd_keyboard_event) {
 
 BD_CLASS(bd_timer_event) {
 	BD_EXTENDS(bd_event);
-	bd_timer_t timer;
+	BD_INT id;
     void(*constructor)(bd_timer_event_t self);
     void(*destructor)(bd_timer_event_t self);
 };
@@ -83,8 +118,8 @@ BD_CLASS(bd_window_invalidate_event) {
 BD_CLASS(bd_window_manager_invalidate_event) {
 	BD_EXTENDS(bd_event);
 	bd_window_invalidate_from_object object;
-    void(*constructor)(bd_window_invalidate_event_t self);
-    void(*destructor)(bd_window_invalidate_event_t self);
+    void(*constructor)(bd_window_manager_invalidate_event_t self);
+    void(*destructor)(bd_window_manager_invalidate_event_t self);
 };
 
 BD_CLASS(bd_window_update_finish_event) {
@@ -115,8 +150,8 @@ BD_CLASS(bd_mouse_move_event) {
 	BD_INT x;
 	BD_INT y;
 	bd_mouse_move_direction direction;
-	void(*constructor)(bd_window_move_event_t self);
-    void(*destructor)(bd_window_move_event_t self);
+	void(*constructor)(bd_mouse_move_event_t self);
+    void(*destructor)(bd_mouse_move_event_t self);
 };
 
 BD_CLASS(bd_mouse_button_event) {
@@ -125,8 +160,20 @@ BD_CLASS(bd_mouse_button_event) {
 	bd_mouse_button button;
 	BD_INT x;
 	BD_INT y;
+	void(*constructor)(bd_mouse_button_event_t self);
+    void(*destructor)(bd_mouse_button_event_t self);
+};
+
+BD_CLASS(bd_mouse_drag_event) {
+	BD_EXTENDS(bd_event);
+	bd_mouse_button button;
+	BD_INT start_x;
+	BD_INT start_y;
+	BD_INT current_x;
+	BD_INT current_y;
 	void(*constructor)(bd_window_move_event_t self);
     void(*destructor)(bd_window_move_event_t self);
 };
 
-#endif //BDGUI_EVENTS_H
+
+#endif

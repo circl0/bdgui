@@ -1,5 +1,5 @@
 /* bdgui - a kind of embedded gui system
-　* Copyright (C) 2016  BDGUI Team
+　* Copyright (C) 2016  Allen Yuan
 　*
 　* This program is free software; you can redistribute it and/or
 　* modify it under the terms of the GNU General Public License
@@ -16,29 +16,24 @@
  *
 */
 
+#ifndef INCLUDE_SYSTEM_LINUX_COND_H_
+#define INCLUDE_SYSTEM_LINUX_COND_H_
 
-#ifndef INCLUDE_RENDER_PAINTER_INTERNAL_CAIRO_SURFACE_H_
-#define INCLUDE_RENDER_PAINTER_INTERNAL_CAIRO_SURFACE_H_
-
-#include "type/type.h"
 #include "type/object.h"
-#include "render/cairo/cairo_painter.h"
-#include "system/display.h"
-#include <cairo.h>
+#include <pthread.h>
 
-BD_CLASS(bd_surface_internal) {
-	// cairo surface
-	cairo_surface_t* cs;
+BD_CLASS(bd_cond_internal) {
 
-	bd_color_type color_type;
+	pthread_cond_t pc;
 
-	// con/des
-    void (*constructor)(bd_surface_internal_t surface, bd_display_t display);
-    void (*destructor)(bd_surface_internal_t surface);
+	void (*constructor)(bd_cond_internal_t cond);
+	void (*destructor)(bd_cond_internal_t cond);
 
+	BD_INT (*wait)(bd_cond_internal_t cond, bd_mutex_internal_t mutex);
+	BD_INT (*signal)(bd_cond_internal_t cond);
 };
 
-bd_surface_internal_t bd_surface_internal_create(bd_display_t display);
-void bd_surface_internal_destroy(bd_surface_internal_t surface);
+bd_cond_internal_t bd_cond_internal_create();
+void bd_cond_internal_destroy(bd_cond_internal_t cond);
 
-#endif /* INCLUDE_RENDER_PAINTER_INTERNAL_CAIRO_SURFACE_H_ */
+#endif

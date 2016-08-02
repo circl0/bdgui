@@ -21,30 +21,22 @@
 #define INCLUDE_SYSTEM_INPUT_H_
 
 #include "type/type.h"
-#include "event/base.h"
+#include "event/event.h"
 #include "system/source.h"
 #include "type/object.h"
+#include "system/linux/input.h"
 
-typedef enum bd_input_type {
-	BD_INPUT_INVALID = -1,
-	BD_INPUT_MOUSE,
-	BD_INPUT_TOUCH,
-	BD_INPUT_KEYBOARD
-} bd_input_type;
-
-#define BD_INPUT_NAME_MAX 255
-
-BD_ABSTRACT_CLASS(bd_input) {
+BD_CLASS(bd_input) {
 	EXTENDS(bd_source);
-	char name[BD_INPUT_NAME_MAX];
+
+	char* name;
 	bd_input_type type;
 
-	void(*constructor)(bd_input_t input, bd_input_type type);
+	bd_input_internal_t input_internal;
+
+	void(*constructor)(bd_input_t input, const char* name, bd_input_type type);
 	void(*destructor)(bd_input_t input);
 
-	BD_INT(*open)(bd_input_t input);
-	BD_INT(*close)(bd_input_t input);
-	bd_event_t(*read)(bd_input_t input);
 };
 
 bd_input_t bd_input_create(const char* name, bd_input_type type);

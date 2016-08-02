@@ -25,8 +25,16 @@
 #include "font/font.h"
 #include "type/type.h"
 #include "render/region.h"
+#include "render/cairo/cairo_painter.h"
+
  
-BD_INTERFACE(bd_painter) {
+BD_CLASS(bd_painter) {
+	BD_EXTENDS(bd_object);
+
+	bd_painter_internal_t painter_internal;
+
+	void (*constructor)(bd_painter_t p);
+	void (*destructor)(bd_painter_t p);
 	
 	// drawing method
 	void (*draw_line)(bd_painter_t p, BD_INT x1, BD_INT y1, BD_INT x2, BD_INT y2);
@@ -49,5 +57,7 @@ BD_INTERFACE(bd_painter) {
 	void (*reset_clip)(bd_painter_t p);
 };
 
+bd_painter_t bd_painter_create();
+void bd_painter_destroy(bd_painter_t painter);
 
 #endif /* INCLUDE_RENDER_RENDERER_H_ */

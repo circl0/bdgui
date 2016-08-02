@@ -20,15 +20,44 @@
 #define INCLUDE_SYSTEM_LINUX_INPUT_H_
 
 #include "system/linux/source_pool.h"
-#include "system/input.h"
+#include "event/event.h"
 
-BD_CLASS(bd_linux_input) {
-	BD_EXTENDS(bd_input);
+typedef struct bd_linux_mouse_status {
+	BD_INT x;
+	BD_INT y;
+	BD_INT button;
+	BD_INT start_point[3][2];
+} bd_linux_mouse_status;
+
+typedef struct bd_linux_keyboard_status {
+
+} bd_linux_keyboard_status;
+
+typedef struct bd_linux_touch_status {
+
+} bd_linux_touch_status;
+
+typedef union bd_linux_input_status {
+	bd_linux_mouse_status mouse_status;
+	bd_linux_keyboard_status keyboard_status;
+	bd_linux_touch_status touch_status;
+} bd_linux_input_status;
+
+BD_CLASS(bd_input_internal) {
+
 	BD_INT fd;
+	bd_linux_input_status input_status;
 
-	void(*constructor)(bd_linux_input_t input, const char* name, bd_input_type type);
-	void(*destructor)(bd_linux_input_t input);
+	void(*constructor)(bd_input_internal_t input);
+	void(*destructor)(bd_input_internal_t input);
+
+	BD_INT(*open)(bd_input_internal_t input, const char* name);
+	BD_INT(*close)(bd_input_internal_t input);
+	bd_event_t(*read)(bd_input_internal_t input, bd_input_type type);
 
 };
+
+bd_input_internal_t bd_input_internal_create();
+void bd_input_internal_destroy(bd_input_internal_t input);
 
 #endif 

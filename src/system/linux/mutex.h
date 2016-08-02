@@ -16,45 +16,24 @@
  *
 */
 
-
-#ifndef BD_EVENT_H
-#define BD_EVENT_H
+#ifndef INCLUDE_SYSTEM_LINUX_MUTEX_H_
+#define INCLUDE_SYSTEM_LINUX_MUTEX_H_
 
 #include "type/object.h"
-#include "type/type.h"
+#include <pthread.h>
 
-#define BD_EVENT_NUM_MAX	256
+BD_CLASS(bd_mutex_internal) {
 
-typedef enum bd_event_id {
-    BD_EVENT_INVALID = -1,
-	BD_EVENT_ON_TIMER,
-	BD_EVENT_ON_MOUSE_BUTTON,
-	BD_EVENT_ON_MOUSE_MOVE,
-	BD_EVENT_ON_KEYBOARD,
-	BD_EVENT_ON_TOUCH,
-	BD_EVENT_ON_INVALIDATE,
+	pthread_mutex_t pm;
 
-	BD_EVENT_WINDOW_INVALIDATE,
-	BD_EVENT_WINDOW_UPDATE_FINISH,
-	BD_EVENT_WINDOW_MOVE,
-	BD_EVENT_WINDOW_RESIZE,
-	BD_EVENT_MAX = BD_EVENT_NUM_MAX,
-} bd_event_id;
+	void (*constructor)(bd_mutex_internal_t mutex);
+	void (*destructor)(bd_mutex_internal_t mutex);
 
-
-BD_ABSTRACT_CLASS(bd_event) {
-	BD_EXTENDS(bd_object);
-
-    bd_event_id id;
-    bd_object_t sender;
-    BD_INT finished;
-
-    void(*constructor)(bd_event_t self, bd_event_id id);
-    void(*destructor)(bd_event_t self);
-    bd_event_t (*clone)(bd_event_t self);
+	BD_INT (*lock)(bd_mutex_internal_t mutex);
+	BD_INT (*unlock)(bd_mutex_internal_t mutex);
 };
 
-void bd_event_destroy(bd_event_t event);
-
+bd_mutex_internal_t bd_mutex_internal_create();
+void bd_mutex_internal_destroy(bd_mutex_internal_t mutex);
 
 #endif

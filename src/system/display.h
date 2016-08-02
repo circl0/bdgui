@@ -24,26 +24,30 @@
 #include "type/object.h"
 #include "system/mutex.h"
 
-BD_ABSTRACT_CLASS(bd_display) {
+#include "system/linux/display.h"
+
+
+BD_CLASS(bd_display) {
 	BD_EXTENDS(bd_object);
 
-	BD_UINT screen_width;
-	BD_UINT screen_height;
-	bd_color_type color_type;
+	bd_display_internal_t display_internal;
 	bd_mutex_t mutex;
 
 	void (*constructor)(bd_display_t display);
 	void (*destructor)(bd_display_t display);
-
+	// proxy method
 	BD_UINT (*get_screen_width)(bd_display_t display);
 	BD_UINT (*get_screen_height)(bd_display_t display);
 	bd_color_type (*get_color_type)(bd_display_t display);
 
 	BD_INT (*open)(bd_display_t display);
 	BD_INT (*close)(bd_display_t display);
+	void (*flip)(bd_display_t display);
+
+	// lock & unlock
 	void (*lock)(bd_display_t display);
 	void (*unlock)(bd_display_t display);
-	void (*flip)(bd_display_t display);
+
 	BD_HANDLE (*get_buffer)(bd_display_t display);
 };
 

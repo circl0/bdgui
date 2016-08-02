@@ -20,7 +20,7 @@
 #define INCLUDE_EVENT_QUEUE_H_
 
 #include "type/queue.h"
-#include "event/base.h"
+#include "event/event.h"
 #include "system/mutex.h"
 #include "system/cond.h"
 
